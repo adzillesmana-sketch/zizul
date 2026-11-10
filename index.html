@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Zizul 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fdf6e3;
+            --primary: #ffb7b2;
+            --secondary: #e2f0cb;
+            --text-dark: #5c4a4a;
+            --window-bg: #ffffff;
+            --shadow: 4px 4px 0px rgba(92, 74, 74, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow: hidden; /* Prevent body scroll, handle per section */
+            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Splash Screen */
+        #splash {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .splash-petals {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .splash-petal {
+            position: absolute;
+            bottom: -60px;
+            left: var(--left);
+            font-size: var(--size);
+            opacity: 0;
+            filter: drop-shadow(0 3px 4px rgba(92, 74, 74, 0.15));
+            animation: petal-rise var(--duration) var(--delay) infinite ease-in;
+        }
+
+        @keyframes petal-rise {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7);
+            }
+            15% { opacity: 0.9; }
+            85% { opacity: 0.8; }
+            100% {
+                opacity: 0;
+                transform: translate3d(var(--drift), -110vh, 0) rotate(360deg) scale(1.15);
+            }
+        }
+
+        .splash-heart {
+            display: block;
+            font-family: sans-serif;
+            font-size: clamp(4rem, 18vw, 7rem);
+            line-height: 1;
+            animation: heart-beat 1.1s infinite ease-in-out;
+            filter: drop-shadow(4px 6px 0 rgba(92, 74, 74, 0.15));
+        }
+
+        @keyframes heart-beat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.12); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.08); }
+        }
+
+        .splash-title {
+            margin-top: 12px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .splash-petal,
+            .splash-heart {
+                animation: none;
+            }
+
+            .splash-petal {
+                opacity: 0.55;
+            }
+        }
+
+        .splash-card {
+            background: var(--window-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid var(--text-dark);
+            box-shadow: 8px 8px 0px var(--text-dark);
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            text-align: center;
+            animation: float 2s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(253, 246, 227, 0.9);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 90px;
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navbar */
+        .nav-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--window-bg);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: flex;
+            gap: 15px;
+            border: 2px solid var(--text-dark);
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 15px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.85);
+        }
+
+        .universe-open .nav-bar {
+            position: fixed;
+            z-index: 10000;
+            bottom: calc(12px + env(safe-area-inset-bottom));
+            width: max-content;
+            max-width: calc(100vw - 24px);
+            justify-content: center;
+            gap: clamp(4px, 2vw, 15px);
+            padding: 8px clamp(8px, 3vw, 20px);
+            border-color: rgba(224, 214, 255, 0.6);
+            background: rgba(12, 14, 35, 0.78);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.42);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .universe-open .nav-btn {
+            padding: 8px clamp(7px, 2vw, 12px);
+            color: #f5efff;
+        }
+
+        .universe-open .nav-btn.active {
+            color: #fff;
+            background: #9876e8;
+        }
+
+        /* Windows Retro Style */
+        .retro-window {
+            background: var(--window-bg);
+            border: 2px solid var(--text-dark);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .window-header {
+            background: var(--secondary);
+            border-bottom: 2px solid var(--text-dark);
+            padding: 5px 10px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .window-body {
+            padding: 20px;
+        }
+
+        /* Typewriter */
+        .typewriter {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            min-height: 80px;
+            line-height: 1.4;
+        }
+
+        /* Letter / Message */
+        .letter-paper {
+            background: repeating-linear-gradient(
+                var(--window-bg),
+                var(--window-bg) 24px,
+                #94b8b8 25px
+            );
+            padding: 30px 20px 20px;
+            line-height: 25px;
+            font-family: 'Pacifico', cursive;
+            font-size: 1.2rem;
+            color: #333;
+            border-radius: 5px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05), 2px 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .letter-paper:hover {
+            transform: translateY(-8px) rotateX(3deg) rotateY(-2deg);
+            box-shadow: 12px 15px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 10px 10px 30px 10px;
+            border: 1px solid #ddd;
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .polaroid:hover {
+            transform: translateY(-10px) rotateZ(3deg) scale(1.05);
+            box-shadow: 10px 15px 25px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .polaroid:nth-child(even):hover {
+            transform: translateY(-10px) rotateZ(-3deg) scale(1.05);
+        }
+
+        .polaroid-img-wrapper {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #eee;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .polaroid img.loaded {
+            opacity: 1;
+        }
+
+        .polaroid-caption {
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* 3D photo galaxy */
+        #universe {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            padding: 0;
+            overflow: hidden;
+            background: #02030b;
+            animation: none;
+            transform: none;
+        }
+
+        .universe-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+            perspective: 1200px;
+            perspective-origin: 50% 48%;
+            background: radial-gradient(ellipse at center, #10102b 0%, #050611 48%, #010208 100%);
+            touch-action: none;
+            user-select: none;
+        }
+
+        .galaxy-canvas,
+        .planet-orbit {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .galaxy-canvas {
+            z-index: 0;
+        }
+
+        .galaxy-canvas.rotating {
+            animation: galaxy-canvas-enter 2s ease both;
+        }
+
+        @keyframes galaxy-canvas-enter {
+            from { opacity: 0; transform: scale(0.55); filter: brightness(2.2); }
+            to { opacity: 1; transform: scale(1); filter: brightness(1); }
+        }
+
+        .planet-orbit {
+            z-index: 1;
+            transform-style: preserve-3d;
+            pointer-events: none;
+        }
+
+        .universe-planet {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: clamp(66px, 8vw, 108px);
+            aspect-ratio: 4 / 5;
+            padding: 2px;
+            overflow: hidden;
+            border: 1px solid rgba(229, 218, 255, 0.65);
+            border-radius: 9px;
+            background: linear-gradient(145deg, #ded4ff, #8c69d8 48%, #402d78);
+            box-shadow:
+                0 0 9px rgba(192, 166, 255, 0.65),
+                0 0 21px rgba(133, 87, 255, 0.3),
+                0 8px 18px rgba(0, 0, 0, 0.45);
+            cursor: pointer;
+            pointer-events: auto;
+            transform-style: preserve-3d;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .universe-planet::after {
+            position: absolute;
+            inset: 3px;
+            border-radius: 6px;
+            content: "";
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 38%, rgba(3, 5, 23, 0.28));
+        }
+
+        .universe-planet img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.4s ease, filter 0.25s ease;
+        }
+
+        .universe-planet img.loaded {
+            opacity: 1;
+        }
+
+        .universe-planet img.rotated-photo {
+            width: 125%;
+            height: 80%;
+            transform: rotate(90deg);
+        }
+
+        .universe-planet:hover img,
+        .universe-planet:focus-visible img {
+            filter: brightness(1.12);
+        }
+
+        .universe-planet:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 5px;
+        }
+
+        .photo-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: rgba(1, 2, 10, 0.92);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .photo-lightbox.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .photo-lightbox img {
+            max-width: min(90vw, 520px);
+            max-height: 82vh;
+            object-fit: contain;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(154, 115, 255, 0.45);
+        }
+
+        .photo-lightbox img.rotated-photo {
+            max-width: min(82vh, 520px);
+            max-height: 90vw;
+            transform: rotate(90deg);
+        }
+
+        .photo-lightbox-close {
+            position: absolute;
+            top: max(18px, env(safe-area-inset-top));
+            right: max(18px, env(safe-area-inset-right));
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Skeleton Shimmer */
+        .skeleton {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Playlist */
+        .spotify-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .spotify-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .spotify-wrapper iframe {
+            width: 100%;
+            height: 152px;
+            border: none;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .spotify-wrapper iframe.loaded {
+            opacity: 1;
+        }
+
+        /* Pattern lock */
+        .pattern-lock {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(253, 246, 227, 0.97);
+            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+            background-size: 20px 20px;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .pattern-lock.unlocked {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .pattern-card {
+            width: min(100%, 360px);
+            padding: 28px 20px;
+            text-align: center;
+            background: var(--window-bg);
+            border: 2px solid var(--text-dark);
+            border-radius: 18px;
+            box-shadow: 6px 6px 0 var(--text-dark);
+        }
+
+        .pattern-card h1 {
+            margin-bottom: 8px;
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+        }
+
+        .pattern-instruction {
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .pattern-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: min(76vw, 280px);
+            aspect-ratio: 1;
+            margin: 0 auto;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .pattern-grid svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .pattern-line {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .pattern-point {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .pattern-point::before {
+            width: 18px;
+            aspect-ratio: 1;
+            content: "";
+            border: 3px solid var(--text-dark);
+            border-radius: 50%;
+            background: var(--window-bg);
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .pattern-point.selected::before {
+            transform: scale(1.25);
+            background: var(--primary);
+        }
+
+        .pattern-point:focus-visible {
+            outline: 2px dashed var(--text-dark);
+            outline-offset: -8px;
+            border-radius: 50%;
+        }
+
+        .pattern-status {
+            min-height: 24px;
+            margin-top: 18px;
+            font-weight: 700;
+        }
+
+        .pattern-status.error {
+            color: #b42318;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pattern-lock,
+            .pattern-point::before {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pattern-lock" id="pattern-lock">
+        <div class="pattern-card">
+            <h1>Rahasia kecil 💌</h1>
+            <p class="pattern-instruction">Gambar pola untuk membuka</p>
+            <div class="pattern-grid" id="pattern-grid" role="group" aria-label="Pola kunci 3 kali 3">
+                <svg viewBox="0 0 280 280" aria-hidden="true">
+                    <polyline class="pattern-line" id="pattern-line"></polyline>
+                </svg>
+                <button class="pattern-point" type="button" data-point="1" aria-label="Titik 1"></button>
+                <button class="pattern-point" type="button" data-point="2" aria-label="Titik 2"></button>
+                <button class="pattern-point" type="button" data-point="3" aria-label="Titik 3"></button>
+                <button class="pattern-point" type="button" data-point="4" aria-label="Titik 4"></button>
+                <button class="pattern-point" type="button" data-point="5" aria-label="Titik 5"></button>
+                <button class="pattern-point" type="button" data-point="6" aria-label="Titik 6"></button>
+                <button class="pattern-point" type="button" data-point="7" aria-label="Titik 7"></button>
+                <button class="pattern-point" type="button" data-point="8" aria-label="Titik 8"></button>
+                <button class="pattern-point" type="button" data-point="9" aria-label="Titik 9"></button>
+            </div>
+            <p class="pattern-status" id="pattern-status" aria-live="polite">Geser untuk membentuk pola ✨</p>
+        </div>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="splash-petals" aria-hidden="true">
+            <span class="splash-petal" style="--left: 8%; --size: 1.8rem; --duration: 7s; --delay: -2s; --drift: 35px;">🌸</span>
+            <span class="splash-petal" style="--left: 22%; --size: 1.4rem; --duration: 8s; --delay: -6s; --drift: -25px;">💗</span>
+            <span class="splash-petal" style="--left: 38%; --size: 2rem; --duration: 9s; --delay: -4s; --drift: 30px;">🌷</span>
+            <span class="splash-petal" style="--left: 57%; --size: 1.5rem; --duration: 7.5s; --delay: -1s; --drift: -35px;">💕</span>
+            <span class="splash-petal" style="--left: 74%; --size: 1.9rem; --duration: 8.5s; --delay: -5s; --drift: 25px;">🌸</span>
+            <span class="splash-petal" style="--left: 91%; --size: 1.5rem; --duration: 7s; --delay: -3s; --drift: -30px;">💖</span>
+        </div>
+        <div class="splash-card">
+            <span class="splash-heart" aria-hidden="true">💌</span>
+            <p class="splash-title">Ada sesuatu buat kamu, Zizul</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <!-- HOME SECTION -->
+        <section id="home" class="content active">
+            <div class="retro-window">
+                <div class="window-header">
+                    <span>C:\Users\Zizul\Home.exe</span>
+                    <span>_ X</span>
+                </div>
+                <div class="window-body">
+                    <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; box-shadow: 2px 2px 8px rgba(0,0,0,0.1);" alt="Senyum Zizul">
+                    <div class="typewriter" id="typewriter-text"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MESSAGE SECTION -->
+        <section id="message" class="content">
+            <div class="retro-window">
+                <div class="window-header">
+                    <span>C:\Users\Zizul\Surat_Buat_Zizul.txt</span>
+                    <span>_ X</span>
+                </div>
+                <div class="window-body">
+                    <div class="letter-paper">
+                        <h2 style="font-family: 'Quicksand', sans-serif; font-size: 1.3rem; border-bottom: 2px dashed #ccc; padding-bottom: 10px; margin-bottom: 15px;">Untuk: NUR AZIZAH (Zizul) 💌</h2>
+                        Hai, Zizul!<br><br>
+                        Jujur, aku seneng banget tiap kali bisa ngobrol sama kamu. Ada aja hal kecil dari kamu yang bikin hariku jadi lebih seru—dan entah kenapa, aku jadi sering kepikiran kamu juga 🙈<br><br>
+                        Aku bikin ini khusus buat kamu. Anggap aja ini caraku bilang kalau aku pengin kenal kamu lebih dekat. Kalau kamu berkenan, kapan-kapan mau gak jalan bareng aku? Santai aja, gak perlu buru-buru jawab kok 😊<br><br>
+                        Apa pun jawabannya, semoga hari-harimu selalu menyenangkan, ya. Tetap jadi Zizul yang bikin suasana jadi lebih cerah 💖<br><br>
+                        <span style="float:right;">Dari cowok yang lagi berusaha bikin kamu senyum 😉</span>
+                        <div style="clear:both;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY SECTION -->
+        <section id="gallery" class="content">
+            <div class="retro-window">
+                <div class="window-header">
+                    <span>C:\Users\Zizul\Memories.exe</span>
+                    <span>_ X</span>
+                </div>
+                <div class="window-body">
+                    <h3 style="text-align: center; margin-bottom: 20px; font-family: 'VT323'; font-size: 1.5rem;">📸 Momen bareng Zizul</h3>
+                    <div class="gallery-grid">
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" alt="Zizul dengan filter hati" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Senyum manis kamu 💖</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42%20(1).jpeg" alt="Foto Zizul bergaya retro" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Vibes retro gemes 🤪</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42.jpeg" alt="Selfie Zizul berhijab hitam" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Cantik banget 🌸</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25%20(1).jpeg" alt="Zizul tersenyum" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Jadi kangen kamu 🙈</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25.jpeg" alt="Kolase foto Zizul berhijab putih" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Empat kali makin gemes 💌</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26%20(1).jpeg" alt="Kolase selfie Zizul" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Senyumnya bikin salting 😉</div>
+                        </div>
+                        <div class="polaroid">
+                            <div class="polaroid-img-wrapper">
+                                <div class="skeleton"></div>
+                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26.jpeg" alt="Selfie Zizul di luar ruangan" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                            </div>
+                            <div class="polaroid-caption">Cantik di mana aja ✨</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UNIVERSE SECTION -->
+        <section id="universe" class="content">
+            <div class="universe-scene" id="universe-scene">
+                <canvas class="galaxy-canvas rotating" id="galaxy-canvas" aria-hidden="true"></canvas>
+                <div class="planet-orbit" id="planet-orbit">
+                    <button class="universe-planet" type="button" aria-label="Buka foto 1">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 2">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 3">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 4">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 5">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 6">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 7">
+                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 8">
+                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.03.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 9">
+                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 10">
+                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04%20(2).jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 11">
+                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 12">
+                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.05.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                    <button class="universe-planet" type="button" aria-label="Buka foto 13">
+                        <img class="rotated-photo" src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.06.jpeg" alt="" onload="this.classList.add('loaded');">
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLAYLIST SECTION -->
+        <section id="playlist" class="content">
+            <div class="retro-window">
+                <div class="window-header">
+                    <span>C:\Users\Zizul\Playlist.mp3</span>
+                    <span>_ X</span>
+                </div>
+                <div class="window-body">
+                    <h3 style="text-align: center; margin-bottom: 20px; font-family: 'VT323'; font-size: 1.5rem;">🎵 Lagu yang bikin inget kamu 🎵</h3>
+                    
+                    <div class="spotify-wrapper">
+                        <div class="skeleton"></div>
+                        <iframe src="https://open.spotify.com/embed/track/05GsNucq8Bngd9fnd4fRa0" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    </div>
+
+                    <div class="spotify-wrapper">
+                        <div class="skeleton"></div>
+                        <iframe src="https://open.spotify.com/embed/track/1GP8VW5Wk2w2obkWjGCGXd" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    </div>
+
+                    <div class="spotify-wrapper">
+                        <div class="skeleton"></div>
+                        <iframe src="https://open.spotify.com/embed/track/1BxfuPKGuaTgP7aM0Bbdwr" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- NAVIGATION -->
+        <nav class="nav-bar">
+            <button class="nav-btn active" onclick="navigate('home', event)">Home</button>
+            <button class="nav-btn" onclick="navigate('message', event)">Surat</button>
+            <button class="nav-btn" onclick="navigate('gallery', event)">Foto</button>
+            <button class="nav-btn" onclick="navigate('universe', event)">Semesta</button>
+            <button class="nav-btn" onclick="navigate('playlist', event)">Lagu</button>
+        </nav>
+
+    </div>
+
+    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Foto">
+        <button class="photo-lightbox-close" type="button" aria-label="Tutup foto">&times;</button>
+        <img id="lightbox-image" alt="">
+    </div>
+
+    <script>
+        // Splash Screen Logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                splash.style.transform = 'rotateX(90deg) scale(0.5)';
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 800);
+            }, 2500);
+        });
+
+        // Pattern lock: the N path through a 3x3 grid.
+        const patternGrid = document.getElementById('pattern-grid');
+        const patternStatus = document.getElementById('pattern-status');
+        const patternLine = document.getElementById('pattern-line');
+        const patternLock = document.getElementById('pattern-lock');
+        const targetPattern = ['1', '4', '7', '5', '3', '6', '9'];
+        let currentPattern = [];
+        let drawingPattern = false;
+        let lastPointerPosition = null;
+
+        function addPatternPoint(point) {
+            if (!point || currentPattern.includes(point.dataset.point)) return;
+            currentPattern.push(point.dataset.point);
+            point.classList.add('selected');
+            const points = currentPattern.map((value) => {
+                const index = Number(value) - 1;
+                const x = (index % 3) * (280 / 3) + (280 / 6);
+                const y = Math.floor(index / 3) * (280 / 3) + (280 / 6);
+                return `${x},${y}`;
+            });
+            patternLine.setAttribute('points', points.join(' '));
+        }
+
+        function resetPattern() {
+            currentPattern = [];
+            patternGrid.querySelectorAll('.pattern-point').forEach((point) => point.classList.remove('selected'));
+            patternLine.setAttribute('points', '');
+        }
+
+        function addPointsAlongPath(start, end) {
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const lengthSquared = dx * dx + dy * dy;
+            const crossedPoints = [...patternGrid.querySelectorAll('.pattern-point')].map((point) => {
+                const bounds = point.getBoundingClientRect();
+                const centerX = bounds.left + bounds.width / 2;
+                const centerY = bounds.top + bounds.height / 2;
+                const progress = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1,
+                    ((centerX - start.x) * dx + (centerY - start.y) * dy) / lengthSquared
+                ));
+                const distance = Math.hypot(
+                    start.x + progress * dx - centerX,
+                    start.y + progress * dy - centerY
+                );
+                return { point, progress, distance, radius: Math.min(bounds.width, bounds.height) * 0.3 };
+            }).filter(({ point, distance, radius }) =>
+                !currentPattern.includes(point.dataset.point) && distance <= radius
+            ).sort((a, b) => a.progress - b.progress);
+
+            crossedPoints.forEach(({ point }) => addPatternPoint(point));
+        }
+
+        function trackPatternPointer(event) {
+            const position = { x: event.clientX, y: event.clientY };
+            if (lastPointerPosition) addPointsAlongPath(lastPointerPosition, position);
+            lastPointerPosition = position;
+        }
+
+        patternGrid.addEventListener('pointerdown', (event) => {
+            const point = event.target.closest('.pattern-point');
+            if (!point) return;
+            event.preventDefault();
+            drawingPattern = true;
+            patternGrid.setPointerCapture(event.pointerId);
+            patternStatus.textContent = 'Geser untuk membentuk pola ✨';
+            patternStatus.classList.remove('error');
+            resetPattern();
+            addPatternPoint(point);
+            lastPointerPosition = { x: event.clientX, y: event.clientY };
+        });
+
+        patternGrid.addEventListener('pointermove', (event) => {
+            if (!drawingPattern) return;
+            trackPatternPointer(event);
+        });
+
+        patternGrid.addEventListener('pointerup', (event) => {
+            if (!drawingPattern) return;
+            trackPatternPointer(event);
+            drawingPattern = false;
+            lastPointerPosition = null;
+            const isCorrect = currentPattern.length === targetPattern.length &&
+                currentPattern.every((point, index) => point === targetPattern[index]);
+
+            if (isCorrect) {
+                patternStatus.textContent = 'Berhasil! Ada sesuatu buat kamu 💖';
+                patternLock.classList.add('unlocked');
+                startTypewriter();
+                return;
+            }
+
+            patternStatus.textContent = 'Belum pas, coba lagi ya 😉';
+            patternStatus.classList.add('error');
+            window.setTimeout(resetPattern, 600);
+        });
+
+        patternGrid.addEventListener('pointercancel', () => {
+            drawingPattern = false;
+            lastPointerPosition = null;
+            resetPattern();
+        });
+
+        // Draw a rotating particle galaxy and orbit the photos in 3D space.
+        const universeScene = document.getElementById('universe-scene');
+        const galaxyCanvas = document.getElementById('galaxy-canvas');
+        const galaxyContext = galaxyCanvas.getContext('2d');
+        const planetOrbit = document.getElementById('planet-orbit');
+        const universePlanets = [...planetOrbit.querySelectorAll('.universe-planet')];
+        const photoLightbox = document.getElementById('photo-lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const galaxyPalette = ['#faffd1', '#fff1a8', '#b6ffbd', '#8cf7ff', '#ffc8eb', '#d4c2ff'];
+        let galaxyWidth = 0;
+        let galaxyHeight = 0;
+        let galaxyDpr = 1;
+        let galaxyParticles = [];
+        let galaxyStars = [];
+        let galaxyFrame = 0;
+        let galaxyElapsed = 0;
+        let galaxyLastFrame = 0;
+        let pointerX = 0;
+        let pointerY = 0;
+        let targetPointerX = 0;
+        let targetPointerY = 0;
+        let touchX = 0;
+        let touchY = 0;
+        let targetTouchX = 0;
+        let targetTouchY = 0;
+        let touchEnergy = 0;
+        let targetTouchEnergy = 0;
+        let touchRipple = 0;
+
+        function resizeGalaxy() {
+            const bounds = universeScene.getBoundingClientRect();
+            galaxyWidth = bounds.width;
+            galaxyHeight = bounds.height;
+            galaxyDpr = Math.min(window.devicePixelRatio || 1, 2);
+            galaxyCanvas.width = Math.round(galaxyWidth * galaxyDpr);
+            galaxyCanvas.height = Math.round(galaxyHeight * galaxyDpr);
+            galaxyCanvas.style.width = `${galaxyWidth}px`;
+            galaxyCanvas.style.height = `${galaxyHeight}px`;
+            galaxyContext.setTransform(galaxyDpr, 0, 0, galaxyDpr, 0, 0);
+
+            const particleCount = Math.min(2600, Math.round(galaxyWidth * galaxyHeight / 145));
+            galaxyParticles = Array.from({ length: particleCount }, () => ({
+                arm: Math.floor(Math.random() * 3),
+                angle: (Math.random() - 0.5) * 1.35,
+                radius: Math.pow(Math.random(), 0.72),
+                size: Math.random() * 1.9 + 0.45,
+                speed: 0.045 + Math.random() * 0.14,
+                color: galaxyPalette[Math.floor(Math.random() * galaxyPalette.length)],
+                phase: Math.random() * Math.PI * 2
+            }));
+            galaxyStars = Array.from({ length: 140 }, () => ({
+                x: Math.random() * galaxyWidth,
+                y: Math.random() * galaxyHeight,
+                size: Math.random() * 1.25 + 0.2,
+                phase: Math.random() * Math.PI * 2
+            }));
+            drawGalaxy(0);
+            positionPlanets(0);
+        }
+
+        function drawGalaxy(time) {
+            if (!galaxyWidth || !galaxyHeight) return;
+
+            const context = galaxyContext;
+            const centerX = galaxyWidth / 2 + pointerX * 13;
+            const centerY = galaxyHeight * 0.48 + pointerY * 10;
+            const radiusX = galaxyWidth * 0.52;
+            const radiusY = Math.min(galaxyHeight * 0.42, galaxyWidth * 0.58);
+            const elapsed = time / 1000;
+            const coreX = centerX + (touchX - centerX) * touchEnergy * 0.22;
+            const coreY = centerY + (touchY - centerY) * touchEnergy * 0.22;
+            const pulse = 1 + Math.sin(elapsed * 2.1) * 0.12 + touchEnergy * 0.28;
+
+            context.clearRect(0, 0, galaxyWidth, galaxyHeight);
+            const background = context.createRadialGradient(centerX, centerY, 2, centerX, centerY, radiusX);
+            background.addColorStop(0, 'rgba(255, 206, 100, 0.22)');
+            background.addColorStop(0.24, 'rgba(89, 49, 142, 0.18)');
+            background.addColorStop(0.7, 'rgba(16, 51, 88, 0.12)');
+            background.addColorStop(1, 'rgba(1, 2, 8, 0)');
+            context.fillStyle = background;
+            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
+
+            const aurora = context.createRadialGradient(
+                centerX + Math.sin(elapsed * 0.22) * radiusX * 0.08,
+                centerY - radiusY * 0.54, 0,
+                centerX, centerY - radiusY * 0.54, radiusX * 0.92
+            );
+            aurora.addColorStop(0, `rgba(25, 255, 143, ${0.62 + Math.sin(elapsed * 1.25) * 0.08})`);
+            aurora.addColorStop(0.38, 'rgba(14, 177, 115, 0.31)');
+            aurora.addColorStop(1, 'rgba(5, 28, 27, 0)');
+            context.fillStyle = aurora;
+            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
+
+            const greenHaze = context.createRadialGradient(
+                centerX, centerY - radiusY * 0.52, 0,
+                centerX, centerY - radiusY * 0.52, radiusX * 0.54
+            );
+            greenHaze.addColorStop(0, 'rgba(63, 255, 163, 0.24)');
+            greenHaze.addColorStop(0.55, 'rgba(24, 176, 132, 0.11)');
+            greenHaze.addColorStop(1, 'rgba(12, 47, 68, 0)');
+            context.fillStyle = greenHaze;
+            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
+
+            const blueAurora = context.createRadialGradient(
+                centerX - radiusX * 0.34, centerY + radiusY * 0.42, 0,
+                centerX - radiusX * 0.34, centerY + radiusY * 0.42, radiusX * 0.72
+            );
+            blueAurora.addColorStop(0, 'rgba(25, 211, 255, 0.2)');
+            blueAurora.addColorStop(0.5, 'rgba(34, 111, 201, 0.1)');
+            blueAurora.addColorStop(1, 'rgba(5, 28, 27, 0)');
+            context.fillStyle = blueAurora;
+            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
+
+            const stardust = context.createRadialGradient(
+                coreX, coreY, 2, coreX, coreY, radiusX * 0.74
+            );
+            stardust.addColorStop(0, 'rgba(255, 236, 144, 0.5)');
+            stardust.addColorStop(0.22, 'rgba(255, 193, 91, 0.27)');
+            stardust.addColorStop(0.55, 'rgba(255, 128, 199, 0.14)');
+            stardust.addColorStop(1, 'rgba(255, 128, 199, 0)');
+            context.fillStyle = stardust;
+            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
+
+            galaxyStars.forEach((star) => {
+                const opacity = 0.25 + (Math.sin(elapsed * 1.8 + star.phase) + 1) * 0.32;
+                context.globalAlpha = opacity;
+                context.fillStyle = '#e7e8ff';
+                context.beginPath();
+                context.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                context.fill();
+            });
+
+            galaxyParticles.forEach((particle) => {
+                const armAngle = particle.arm * Math.PI * 2 / 3;
+                const radius = particle.radius;
+                const spiral = armAngle + particle.angle + radius * 5.7 + elapsed * particle.speed * (1.2 - radius * 0.62);
+                let x = centerX + Math.cos(spiral) * radiusX * radius;
+                let y = centerY + Math.sin(spiral) * radiusY * radius;
+
+                if (touchEnergy > 0.01) {
+                    const dx = x - touchX;
+                    const dy = y - touchY;
+                    const distance = Math.max(1, Math.hypot(dx, dy));
+                    const influence = Math.max(0, 1 - distance / (Math.min(galaxyWidth, galaxyHeight) * 0.34)) * touchEnergy;
+                    const swirl = influence * (1 - radius * 0.4) * 0.75;
+                    const cos = Math.cos(swirl);
+                    const sin = Math.sin(swirl);
+                    const movedX = dx * cos - dy * sin;
+                    const movedY = dx * sin + dy * cos;
+                    x = touchX + movedX + (dx / distance) * influence * 24;
+                    y = touchY + movedY + (dy / distance) * influence * 24;
+                }
+
+                const twinkle = 0.43 + (Math.sin(elapsed * 2.4 + particle.phase) + 1) * 0.28;
+                const size = particle.size * (0.6 + (1 - radius) * 1.15);
+                context.globalAlpha = Math.min(1, twinkle * (1 - radius * 0.28));
+                context.fillStyle = particle.color;
+                context.beginPath();
+                context.arc(x, y, size, 0, Math.PI * 2);
+                context.fill();
+            });
+
+            context.globalAlpha = 1;
+            const glow = context.createRadialGradient(coreX, coreY, 1, coreX, coreY, 76 * pulse);
+            glow.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+            glow.addColorStop(0.09, 'rgba(255, 249, 218, 0.9)');
+            glow.addColorStop(0.2, 'rgba(255, 224, 143, 0.66)');
+            glow.addColorStop(0.48, 'rgba(255, 160, 224, 0.2)');
+            glow.addColorStop(1, 'rgba(167, 107, 255, 0)');
+            context.fillStyle = glow;
+            context.beginPath();
+            context.arc(coreX, coreY, 76 * pulse, 0, Math.PI * 2);
+            context.fill();
+
+            const sphereRadius = 8 + touchEnergy * 3;
+            const sphere = context.createRadialGradient(
+                coreX - sphereRadius * 0.3, coreY - sphereRadius * 0.38, 1,
+                coreX, coreY, sphereRadius * 1.4
+            );
+            sphere.addColorStop(0, '#ffffff');
+            sphere.addColorStop(0.32, '#fffce7');
+            sphere.addColorStop(0.72, '#ffe4a8');
+            sphere.addColorStop(1, 'rgba(255, 183, 226, 0.15)');
+            context.fillStyle = sphere;
+            context.beginPath();
+            context.arc(coreX, coreY, sphereRadius, 0, Math.PI * 2);
+            context.fill();
+
+            if (touchRipple > 0) {
+                const rippleRadius = 12 + (1 - touchRipple) * Math.min(galaxyWidth, galaxyHeight) * 0.34;
+                context.globalAlpha = touchRipple * 0.62;
+                context.strokeStyle = '#c9ffe9';
+                context.lineWidth = 1.5 + touchRipple * 2;
+                context.beginPath();
+                context.arc(touchX, touchY, rippleRadius, 0, Math.PI * 2);
+                context.stroke();
+                context.globalAlpha = touchRipple * 0.32;
+                context.lineWidth = 1;
+                context.beginPath();
+                context.arc(touchX, touchY, rippleRadius * 0.68, 0, Math.PI * 2);
+                context.stroke();
+            }
+            context.globalAlpha = 1;
+        }
+
+        function positionPlanets(time) {
+            if (!galaxyWidth || !galaxyHeight) return;
+
+            const centerX = galaxyWidth / 2 + pointerX * 20;
+            const centerY = galaxyHeight * 0.47 + pointerY * 15;
+            const elapsed = time / 1000;
+
+            universePlanets.forEach((planet, index) => {
+                const orbitSize = 0.94 + (index % 3) * 0.025;
+                const angle = (index / universePlanets.length) * Math.PI * 2 +
+                    elapsed * (0.105 + index * 0.0007);
+                const depth = Math.sin(angle);
+                const radiusX = Math.min(galaxyWidth * 0.44 * orbitSize, galaxyWidth / 2 - 60);
+                const radiusY = Math.min(galaxyHeight * 0.38 * orbitSize, galaxyHeight / 2 - 110);
+                const x = centerX + Math.cos(angle) * radiusX;
+                const y = centerY + Math.sin(angle) * radiusY;
+                const scale = 0.42 + ((depth + 1) / 2) * 0.5;
+                planet.style.zIndex = String(Math.round((depth + 1) * 10));
+                planet.style.transform = `translate3d(${x}px, ${y}px, ${depth * 180}px) translate(-50%, -50%) scale(${scale}) rotateY(${pointerX * -16}deg) rotateX(${pointerY * 12}deg) rotateZ(${Math.cos(angle) * 5}deg)`;
+            });
+        }
+
+        function animateGalaxy(timestamp) {
+            if (!document.getElementById('universe').classList.contains('active')) {
+                galaxyFrame = 0;
+                return;
+            }
+
+            if (galaxyLastFrame) galaxyElapsed += timestamp - galaxyLastFrame;
+            galaxyLastFrame = timestamp;
+            pointerX += (targetPointerX - pointerX) * 0.045;
+            pointerY += (targetPointerY - pointerY) * 0.045;
+            touchX += (targetTouchX - touchX) * 0.13;
+            touchY += (targetTouchY - touchY) * 0.13;
+            touchEnergy += (targetTouchEnergy - touchEnergy) * 0.1;
+            touchRipple = Math.max(0, touchRipple - 0.012);
+            drawGalaxy(galaxyElapsed);
+            positionPlanets(galaxyElapsed);
+            galaxyFrame = window.requestAnimationFrame(animateGalaxy);
+        }
+
+        function startGalaxy() {
+            if (!galaxyWidth) resizeGalaxy();
+            if (reducedMotion.matches) {
+                drawGalaxy(galaxyElapsed);
+                positionPlanets(galaxyElapsed);
+                return;
+            }
+            if (!galaxyFrame) galaxyFrame = window.requestAnimationFrame(animateGalaxy);
+        }
+
+        function pauseGalaxy() {
+            if (galaxyFrame) window.cancelAnimationFrame(galaxyFrame);
+            galaxyFrame = 0;
+            galaxyLastFrame = 0;
+        }
+
+        universeScene.addEventListener('pointermove', (event) => {
+            const bounds = universeScene.getBoundingClientRect();
+            targetPointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+            targetPointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+            if (event.pointerType === 'touch' || event.buttons > 0) {
+                targetTouchX = event.clientX - bounds.left;
+                targetTouchY = event.clientY - bounds.top;
+                targetTouchEnergy = 1;
+            }
+        });
+
+        universeScene.addEventListener('pointerdown', (event) => {
+            const bounds = universeScene.getBoundingClientRect();
+            targetTouchX = event.clientX - bounds.left;
+            targetTouchY = event.clientY - bounds.top;
+            targetTouchEnergy = 1;
+            touchRipple = 1;
+        });
+
+        universeScene.addEventListener('pointerup', () => {
+            targetTouchEnergy = 0;
+        });
+
+        universeScene.addEventListener('pointerleave', () => {
+            targetPointerX = 0;
+            targetPointerY = 0;
+            targetTouchEnergy = 0;
+        });
+
+        universePlanets.forEach((planet) => {
+            planet.addEventListener('pointerenter', pauseGalaxy);
+            planet.addEventListener('pointerdown', pauseGalaxy);
+            planet.addEventListener('pointerleave', () => {
+                if (!photoLightbox.classList.contains('open')) startGalaxy();
+            });
+            planet.addEventListener('click', () => {
+                pauseGalaxy();
+                const image = planet.querySelector('img');
+                lightboxImage.src = image.src;
+                lightboxImage.classList.toggle('rotated-photo', image.classList.contains('rotated-photo'));
+                photoLightbox.classList.add('open');
+            });
+        });
+
+        function closePhotoLightbox() {
+            photoLightbox.classList.remove('open');
+            if (document.getElementById('universe').classList.contains('active')) startGalaxy();
+        }
+
+        photoLightbox.addEventListener('click', (event) => {
+            if (event.target === photoLightbox || event.target.closest('.photo-lightbox-close')) {
+                closePhotoLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closePhotoLightbox();
+        });
+
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(resizeGalaxy).observe(universeScene);
+        } else {
+            window.addEventListener('resize', resizeGalaxy);
+        }
+        resizeGalaxy();
+
+        // Navigation Logic
+        function navigate(tabId, event) {
+            // Remove active classes
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            // Add active class to clicked
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            // Trigger ripple effect manually (micro-interaction)
+            event.target.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1)';
+            }, 150);
+
+            // Re-run typewriter if home is clicked
+            if(tabId === 'home') {
+                startTypewriter();
+            }
+            if(tabId === 'universe') {
+                document.body.classList.add('universe-open');
+                startGalaxy();
+                galaxyCanvas.classList.remove('rotating');
+                void galaxyCanvas.offsetWidth;
+                galaxyCanvas.classList.add('rotating');
+            } else {
+                document.body.classList.remove('universe-open');
+                pauseGalaxy();
+            }
+        }
+
+        // Typewriter Effect
+        const text = "Hai Zizul! Aku bikin ini khusus buat kamu. Boleh gak aku kenal kamu lebih dekat? 🙈";
+        let index = 0;
+        let isTyping = false;
+        let typeTimeout;
+
+        function startTypewriter() {
+            if(isTyping) return;
+            isTyping = true;
+            clearTimeout(typeTimeout);
+            const container = document.getElementById('typewriter-text');
+            container.innerHTML = "";
+            index = 0;
+            
+            function type() {
+                if (index < text.length) {
+                    container.innerHTML += text.charAt(index);
+                    index++;
+                    typeTimeout = setTimeout(type, 50);
+                } else {
+                    isTyping = false;
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
