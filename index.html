@@ -2,46 +2,128 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#fdf6e3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
     <title>For Zizul 💖</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #fdf6e3;
             --primary: #ffb7b2;
+            --primary-dark: #f59690;
             --secondary: #e2f0cb;
+            --accent: #c7ceea;
             --text-dark: #5c4a4a;
             --window-bg: #ffffff;
-            --shadow: 4px 4px 0px rgba(92, 74, 74, 0.2);
+            --shadow: 3px 3px 0px rgba(92, 74, 74, 0.2);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
+            overflow: hidden;
+            position: fixed;
             font-family: 'Quicksand', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-dark);
-            overflow: hidden; /* Prevent body scroll, handle per section */
-            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+            background-image: radial-gradient(var(--primary) 1.2px, transparent 1.2px);
             background-size: 20px 20px;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+        }
+
+        /* Ambient floating heart bursts on tap */
+        .tap-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            font-size: 1.3rem;
+            animation: floatUpFade 0.75s ease-out forwards;
+        }
+
+        @keyframes floatUpFade {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+            }
+            50% {
+                transform: translate(calc(-50% + var(--drift-x)), calc(-50% - 35px)) scale(1.2) rotate(15deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + calc(var(--drift-x) * 1.5)), calc(-50% - 70px)) scale(1.4) rotate(-15deg);
+            }
+        }
+
+        /* Floating Audio Controller */
+        .floating-audio-btn {
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            right: calc(14px + var(--safe-right));
+            z-index: 1002;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--text-dark);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+        }
+
+        .floating-audio-btn.playing {
+            animation: spinVinyl 4s linear infinite;
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .floating-audio-btn:active {
+            transform: scale(0.85);
+        }
+
+        @keyframes spinVinyl {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Splash Screen */
         #splash {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background-color: var(--primary);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transition: opacity 0.6s ease, transform 0.6s ease;
             perspective: 1000px;
             overflow: hidden;
+            padding: 20px;
+            cursor: pointer;
         }
 
         .splash-petals {
@@ -53,12 +135,12 @@
 
         .splash-petal {
             position: absolute;
-            bottom: -60px;
+            bottom: -50px;
             left: var(--left);
             font-size: var(--size);
             opacity: 0;
-            filter: drop-shadow(0 3px 4px rgba(92, 74, 74, 0.15));
             animation: petal-rise var(--duration) var(--delay) infinite ease-in;
+            will-change: transform, opacity;
         }
 
         @keyframes petal-rise {
@@ -70,17 +152,28 @@
             85% { opacity: 0.8; }
             100% {
                 opacity: 0;
-                transform: translate3d(var(--drift), -110vh, 0) rotate(360deg) scale(1.15);
+                transform: translate3d(var(--drift), -115vh, 0) rotate(360deg) scale(1.15);
             }
+        }
+
+        .splash-card {
+            background: var(--window-bg);
+            padding: 24px 28px;
+            border-radius: 20px;
+            border: 3px solid var(--text-dark);
+            box-shadow: 6px 6px 0px var(--text-dark);
+            font-family: 'VT323', monospace;
+            text-align: center;
+            animation: float 2.5s infinite ease-in-out;
+            max-width: 320px;
+            width: 100%;
         }
 
         .splash-heart {
             display: block;
-            font-family: sans-serif;
-            font-size: clamp(4rem, 18vw, 7rem);
+            font-size: clamp(3.5rem, 15vw, 5.5rem);
             line-height: 1;
             animation: heart-beat 1.1s infinite ease-in-out;
-            filter: drop-shadow(4px 6px 0 rgba(92, 74, 74, 0.15));
         }
 
         @keyframes heart-beat {
@@ -93,57 +186,54 @@
         .splash-title {
             margin-top: 12px;
             font-family: 'Quicksand', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 700;
+            color: var(--text-dark);
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            .splash-petal,
-            .splash-heart {
-                animation: none;
-            }
-
-            .splash-petal {
-                opacity: 0.55;
-            }
-        }
-
-        .splash-card {
-            background: var(--window-bg);
-            padding: 30px;
-            border-radius: 20px;
-            border: 3px solid var(--text-dark);
-            box-shadow: 8px 8px 0px var(--text-dark);
+        .splash-hint {
+            margin-top: 14px;
             font-family: 'VT323', monospace;
-            font-size: 2rem;
-            text-align: center;
-            animation: float 2s infinite ease-in-out;
+            font-size: 1.1rem;
+            color: #7a6363;
+            letter-spacing: 0.5px;
+            animation: pulseHint 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseHint {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
-        /* Layout */
+        /* App Container */
         .app-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            max-width: 500px;
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            height: 100dvh;
             margin: 0 auto;
-            background: rgba(253, 246, 227, 0.9);
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background: rgba(253, 246, 227, 0.95);
+            box-shadow: 0 0 25px rgba(92, 74, 74, 0.12);
             position: relative;
+            overflow: hidden;
         }
 
+        /* Content Sections */
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 90px;
+            -webkit-overflow-scrolling: touch;
+            padding: calc(14px + var(--safe-top)) 14px calc(88px + var(--safe-bottom)) 14px;
             display: none;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 0.4s ease forwards;
+            overscroll-behavior-y: contain;
         }
 
         .content.active {
@@ -151,80 +241,16 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Navbar */
-        .nav-bar {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--window-bg);
-            padding: 10px 20px;
-            border-radius: 30px;
-            display: flex;
-            gap: 15px;
-            border: 2px solid var(--text-dark);
-            box-shadow: var(--shadow);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: none;
-            font-family: 'VT323', monospace;
-            font-size: 1.2rem;
-            color: var(--text-dark);
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 15px;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-        }
-
-        .nav-btn:active {
-            transform: scale(0.85);
-        }
-
-        .universe-open .nav-bar {
-            position: fixed;
-            z-index: 10000;
-            bottom: calc(12px + env(safe-area-inset-bottom));
-            width: max-content;
-            max-width: calc(100vw - 24px);
-            justify-content: center;
-            gap: clamp(4px, 2vw, 15px);
-            padding: 8px clamp(8px, 3vw, 20px);
-            border-color: rgba(224, 214, 255, 0.6);
-            background: rgba(12, 14, 35, 0.78);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.42);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-        }
-
-        .universe-open .nav-btn {
-            padding: 8px clamp(7px, 2vw, 12px);
-            color: #f5efff;
-        }
-
-        .universe-open .nav-btn.active {
-            color: #fff;
-            background: #9876e8;
         }
 
         /* Windows Retro Style */
         .retro-window {
             background: var(--window-bg);
             border: 2px solid var(--text-dark);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow);
             overflow: hidden;
         }
@@ -232,76 +258,288 @@
         .window-header {
             background: var(--secondary);
             border-bottom: 2px solid var(--text-dark);
-            padding: 5px 10px;
+            padding: 7px 12px;
             font-family: 'VT323', monospace;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .window-header .window-controls {
+            display: flex;
+            gap: 6px;
+            font-size: 1.1rem;
+            color: var(--text-dark);
         }
 
         .window-body {
-            padding: 20px;
+            padding: 15px;
         }
 
-        /* Typewriter */
+        /* Typewriter & Home components */
         .typewriter {
             font-family: 'VT323', monospace;
-            font-size: 1.5rem;
-            min-height: 80px;
+            font-size: 1.35rem;
+            min-height: 70px;
             line-height: 1.4;
+            color: var(--text-dark);
+            user-select: text;
+            -webkit-user-select: text;
         }
 
-        /* Letter / Message */
+        .interactive-quote-card {
+            background: #fff8f0;
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .quote-title {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: #d96962;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .quote-text {
+            font-size: 0.95rem;
+            line-height: 1.45;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a3b32;
+        }
+
+        .btn-sweet {
+            margin-top: 10px;
+            background: var(--primary);
+            border: 2px solid var(--text-dark);
+            border-radius: 12px;
+            padding: 6px 14px;
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--text-dark);
+            transition: transform 0.15s, background-color 0.15s;
+        }
+
+        .btn-sweet:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .quick-card {
+            background: var(--window-bg);
+            border: 2px solid var(--text-dark);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--text-dark);
+            transition: transform 0.15s;
+        }
+
+        .quick-card:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .quick-card-icon {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .quick-card-title {
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            font-weight: bold;
+        }
+
+        .quick-card-desc {
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        /* Letter / Message Section */
+        .letter-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .btn-font-toggle {
+            background: var(--secondary);
+            border: 1.5px solid var(--text-dark);
+            border-radius: 8px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
         .letter-paper {
             background: repeating-linear-gradient(
                 var(--window-bg),
-                var(--window-bg) 24px,
-                #94b8b8 25px
+                var(--window-bg) 27px,
+                #d3e5e5 28px
             );
-            padding: 30px 20px 20px;
-            line-height: 25px;
+            padding: 24px 16px 20px;
+            line-height: 28px;
             font-family: 'Pacifico', cursive;
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             color: #333;
-            border-radius: 5px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05), 2px 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            transform-style: preserve-3d;
-            perspective: 1000px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.03), 2px 4px 10px rgba(0,0,0,0.08);
+            user-select: text;
+            -webkit-user-select: text;
+            transition: font-family 0.2s;
         }
 
-        .letter-paper:hover {
-            transform: translateY(-8px) rotateX(3deg) rotateY(-2deg);
-            box-shadow: 12px 15px 25px rgba(0,0,0,0.15);
+        .letter-paper.clean-font {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 0.98rem;
+            line-height: 28px;
         }
 
-        /* Gallery */
+        /* Proposal / Interactive Answer Card */
+        .proposal-card {
+            background: #fff;
+            border: 2px solid var(--text-dark);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .proposal-title {
+            font-family: 'VT323', monospace;
+            font-size: 1.35rem;
+            color: #d96962;
+            margin-bottom: 6px;
+        }
+
+        .proposal-desc {
+            font-size: 0.92rem;
+            color: var(--text-dark);
+            margin-bottom: 14px;
+        }
+
+        .proposal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            min-height: 48px;
+            align-items: center;
+        }
+
+        .btn-proposal-yes {
+            background: #a8e6cf;
+            border: 2px solid var(--text-dark);
+            color: var(--text-dark);
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--text-dark);
+            transition: transform 0.15s, background-color 0.2s;
+        }
+
+        .btn-proposal-yes:active {
+            transform: scale(0.92);
+        }
+
+        .btn-proposal-no {
+            background: #ffd3b6;
+            border: 2px solid var(--text-dark);
+            color: var(--text-dark);
+            font-weight: 700;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--text-dark);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .proposal-result {
+            display: none;
+            margin-top: 15px;
+            padding: 14px;
+            background: #fdf2f2;
+            border-radius: 10px;
+            border: 2px dashed #f59690;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .proposal-result p {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #4a3b32;
+        }
+
+        .btn-wa {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 9px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            border: 2px solid #128c7e;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+        }
+
+        .btn-wa:active {
+            transform: scale(0.95);
+        }
+
+        /* Gallery Grid (Mobile 2-column) */
         .gallery-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
         .polaroid {
             background: white;
-            padding: 10px 10px 30px 10px;
-            border: 1px solid #ddd;
-            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            transform-style: preserve-3d;
-            perspective: 1000px;
+            padding: 8px 8px 18px 8px;
+            border: 1.5px solid var(--text-dark);
+            border-radius: 6px;
+            box-shadow: 2px 3px 0 rgba(92, 74, 74, 0.15);
             cursor: pointer;
             position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .polaroid:hover {
-            transform: translateY(-10px) rotateZ(3deg) scale(1.05);
-            box-shadow: 10px 15px 25px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .polaroid:nth-child(even):hover {
-            transform: translateY(-10px) rotateZ(-3deg) scale(1.05);
+        .polaroid:active {
+            transform: scale(0.96);
         }
 
         .polaroid-img-wrapper {
@@ -310,6 +548,7 @@
             background: #eee;
             overflow: hidden;
             position: relative;
+            border-radius: 4px;
         }
 
         .polaroid img {
@@ -317,21 +556,31 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
 
         .polaroid img.loaded {
             opacity: 1;
         }
 
+        .polaroid img.rotated-photo {
+            width: 125%;
+            height: 80%;
+            transform: rotate(90deg);
+        }
+
         .polaroid-caption {
             text-align: center;
             font-family: 'Pacifico', cursive;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin-top: 8px;
+            font-size: 0.82rem;
+            color: #444;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* 3D photo galaxy */
+        /* 3D Photo Galaxy (Semesta) Mobile Optimized */
         #universe {
             position: fixed;
             inset: 0;
@@ -342,17 +591,14 @@
             padding: 0;
             overflow: hidden;
             background: #02030b;
-            animation: none;
-            transform: none;
         }
 
         .universe-scene {
             position: relative;
             width: 100%;
             height: 100%;
-            min-height: 0;
             overflow: hidden;
-            perspective: 1200px;
+            perspective: 900px;
             perspective-origin: 50% 48%;
             background: radial-gradient(ellipse at center, #10102b 0%, #050611 48%, #010208 100%);
             touch-action: none;
@@ -371,15 +617,6 @@
             z-index: 0;
         }
 
-        .galaxy-canvas.rotating {
-            animation: galaxy-canvas-enter 2s ease both;
-        }
-
-        @keyframes galaxy-canvas-enter {
-            from { opacity: 0; transform: scale(0.55); filter: brightness(2.2); }
-            to { opacity: 1; transform: scale(1); filter: brightness(1); }
-        }
-
         .planet-orbit {
             z-index: 1;
             transform-style: preserve-3d;
@@ -390,26 +627,25 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: clamp(66px, 8vw, 108px);
+            width: clamp(52px, 14vw, 76px);
             aspect-ratio: 4 / 5;
             padding: 2px;
             overflow: hidden;
-            border: 1px solid rgba(229, 218, 255, 0.65);
-            border-radius: 9px;
+            border: 1px solid rgba(229, 218, 255, 0.7);
+            border-radius: 8px;
             background: linear-gradient(145deg, #ded4ff, #8c69d8 48%, #402d78);
             box-shadow:
-                0 0 9px rgba(192, 166, 255, 0.65),
-                0 0 21px rgba(133, 87, 255, 0.3),
-                0 8px 18px rgba(0, 0, 0, 0.45);
+                0 0 8px rgba(192, 166, 255, 0.65),
+                0 0 16px rgba(133, 87, 255, 0.3),
+                0 6px 14px rgba(0, 0, 0, 0.45);
             cursor: pointer;
             pointer-events: auto;
             transform-style: preserve-3d;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .universe-planet::after {
             position: absolute;
-            inset: 3px;
+            inset: 2px;
             border-radius: 6px;
             content: "";
             pointer-events: none;
@@ -422,7 +658,7 @@
             border-radius: 6px;
             object-fit: cover;
             opacity: 0;
-            transition: opacity 0.4s ease, filter 0.25s ease;
+            transition: opacity 0.3s ease;
         }
 
         .universe-planet img.loaded {
@@ -435,27 +671,64 @@
             transform: rotate(90deg);
         }
 
-        .universe-planet:hover img,
-        .universe-planet:focus-visible img {
-            filter: brightness(1.12);
+        /* Universe Mobile Top Bar HUD */
+        .universe-hud {
+            position: absolute;
+            top: calc(12px + var(--safe-top));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: calc(100% - 28px);
+            max-width: 440px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(12, 14, 35, 0.75);
+            border: 1px solid rgba(224, 214, 255, 0.35);
+            border-radius: 20px;
+            padding: 6px 14px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #ded4ff;
+            font-size: 0.8rem;
+            pointer-events: auto;
         }
 
-        .universe-planet:focus-visible {
-            outline: 3px solid #fff;
-            outline-offset: 5px;
+        .universe-hud span {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        .universe-hud-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(224, 214, 255, 0.5);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* Mobile Lightbox modal */
         .photo-lightbox {
             position: fixed;
             inset: 0;
             z-index: 10001;
-            display: grid;
-            place-items: center;
-            padding: 24px;
-            background: rgba(1, 2, 10, 0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: calc(16px + var(--safe-top)) 16px calc(24px + var(--safe-bottom)) 16px;
+            background: rgba(1, 2, 10, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.25s ease, visibility 0.25s ease;
+            touch-action: pan-y;
         }
 
         .photo-lightbox.open {
@@ -463,33 +736,143 @@
             visibility: visible;
         }
 
+        .photo-lightbox-content {
+            position: relative;
+            max-width: 100%;
+            max-height: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .photo-lightbox img {
-            max-width: min(90vw, 520px);
-            max-height: 82vh;
+            max-width: min(88vw, 480px);
+            max-height: 65vh;
             object-fit: contain;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 16px;
-            box-shadow: 0 0 40px rgba(154, 115, 255, 0.45);
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            box-shadow: 0 0 35px rgba(154, 115, 255, 0.4);
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .photo-lightbox img.rotated-photo {
-            max-width: min(82vh, 520px);
-            max-height: 90vw;
+            max-width: min(65vh, 480px);
+            max-height: 85vw;
             transform: rotate(90deg);
+        }
+
+        .photo-lightbox-caption {
+            color: #fdf6e3;
+            font-family: 'Pacifico', cursive;
+            margin-top: 14px;
+            font-size: 1.1rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            max-width: 90vw;
+        }
+
+        .photo-lightbox-counter {
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            margin-top: 4px;
         }
 
         .photo-lightbox-close {
             position: absolute;
-            top: max(18px, env(safe-area-inset-top));
-            right: max(18px, env(safe-area-inset-right));
-            width: 44px;
-            height: 44px;
+            top: max(16px, env(safe-area-inset-top));
+            right: max(16px, env(safe-area-inset-right));
+            width: 40px;
+            height: 40px;
             border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             color: white;
-            background: rgba(255, 255, 255, 0.12);
-            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            font-size: 1.6rem;
+            line-height: 1;
+            display: grid;
+            place-items: center;
             cursor: pointer;
+            z-index: 10;
+        }
+
+        .lightbox-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            font-size: 1.5rem;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .lightbox-nav-btn.prev {
+            left: 10px;
+        }
+
+        .lightbox-nav-btn.next {
+            right: 10px;
+        }
+
+        /* Spotify Player List */
+        .spotify-card {
+            background: var(--window-bg);
+            border: 2px solid var(--text-dark);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .spotify-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+        }
+
+        .spotify-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            background: #282828;
+            height: 152px;
+        }
+
+        .spotify-wrapper iframe {
+            width: 100%;
+            height: 152px;
+            border: none;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .spotify-wrapper iframe.loaded {
+            opacity: 1;
+        }
+
+        .spotify-app-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #1db954;
+            font-weight: 700;
+            text-decoration: none;
         }
 
         /* Skeleton Shimmer */
@@ -506,34 +889,7 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Playlist */
-        .spotify-wrapper {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s;
-        }
-        
-        .spotify-wrapper:hover {
-            transform: scale(1.02);
-        }
-
-        .spotify-wrapper iframe {
-            width: 100%;
-            height: 152px;
-            border: none;
-            position: relative;
-            z-index: 2;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .spotify-wrapper iframe.loaded {
-            opacity: 1;
-        }
-
-        /* Pattern lock */
+        /* Pattern Lock Mobile Friendly */
         .pattern-lock {
             position: fixed;
             inset: 0;
@@ -541,11 +897,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
-            background: rgba(253, 246, 227, 0.97);
-            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+            padding: 16px;
+            background: rgba(253, 246, 227, 0.98);
+            background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);
             background-size: 20px 20px;
             transition: opacity 0.4s ease, visibility 0.4s ease;
+            touch-action: none;
+            overscroll-behavior: contain;
         }
 
         .pattern-lock.unlocked {
@@ -555,31 +913,34 @@
         }
 
         .pattern-card {
-            width: min(100%, 360px);
-            padding: 28px 20px;
+            width: 100%;
+            max-width: 350px;
+            padding: 20px 16px;
             text-align: center;
             background: var(--window-bg);
             border: 2px solid var(--text-dark);
             border-radius: 18px;
-            box-shadow: 6px 6px 0 var(--text-dark);
+            box-shadow: 5px 5px 0 var(--text-dark);
+            touch-action: none;
         }
 
         .pattern-card h1 {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-family: 'VT323', monospace;
-            font-size: 2rem;
+            font-size: 1.85rem;
         }
 
         .pattern-instruction {
-            margin-bottom: 22px;
-            line-height: 1.5;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            color: #665;
         }
 
         .pattern-grid {
             position: relative;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            width: min(76vw, 280px);
+            width: min(72vw, 260px);
             aspect-ratio: 1;
             margin: 0 auto;
             touch-action: none;
@@ -598,7 +959,7 @@
         .pattern-line {
             fill: none;
             stroke: var(--primary);
-            stroke-width: 7;
+            stroke-width: 8;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
@@ -611,11 +972,12 @@
             border: 0;
             background: transparent;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            min-height: 48px;
+            min-width: 48px;
         }
 
         .pattern-point::before {
-            width: 18px;
+            width: 20px;
             aspect-ratio: 1;
             content: "";
             border: 3px solid var(--text-dark);
@@ -625,40 +987,160 @@
         }
 
         .pattern-point.selected::before {
-            transform: scale(1.25);
+            transform: scale(1.3);
             background: var(--primary);
         }
 
-        .pattern-point:focus-visible {
-            outline: 2px dashed var(--text-dark);
-            outline-offset: -8px;
-            border-radius: 50%;
-        }
-
         .pattern-status {
-            min-height: 24px;
-            margin-top: 18px;
+            min-height: 22px;
+            margin-top: 14px;
             font-weight: 700;
+            font-size: 0.95rem;
         }
 
         .pattern-status.error {
             color: #b42318;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            .pattern-lock,
-            .pattern-point::before {
-                transition: none;
-            }
+        .pattern-helper-actions {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pattern-action-btn {
+            background: var(--secondary);
+            border: 1.5px solid var(--text-dark);
+            border-radius: 10px;
+            padding: 5px 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .pattern-hint-box {
+            display: none;
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: #fdf6e3;
+            border: 1.5px dashed var(--primary-dark);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #5c4a4a;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Bottom Nav Bar (Mobile App Style) */
+        .nav-bar {
+            position: absolute;
+            bottom: calc(10px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 6px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: calc(100% - 20px);
+            max-width: 440px;
+            border: 2px solid var(--text-dark);
+            box-shadow: 0 4px 14px rgba(92, 74, 74, 0.2);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            font-family: 'VT323', monospace;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 5px 2px;
+            border-radius: 16px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-height: 44px;
+        }
+
+        .nav-btn .nav-icon {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .nav-btn .nav-label {
+            font-size: 1.05rem;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            transform: scale(1.04);
+            box-shadow: 0 2px 6px rgba(255, 183, 178, 0.5);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.88);
+        }
+
+        /* Nav in universe mode */
+        .universe-open .nav-bar {
+            position: fixed;
+            z-index: 10000;
+            bottom: calc(10px + var(--safe-bottom));
+            width: calc(100% - 20px);
+            max-width: 440px;
+            background: rgba(12, 14, 35, 0.85);
+            border-color: rgba(224, 214, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .universe-open .nav-btn {
+            color: #ded4ff;
+        }
+
+        .universe-open .nav-btn.active {
+            background: #8b68e0;
+            color: white;
+            box-shadow: 0 2px 10px rgba(139, 104, 224, 0.6);
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999999;
         }
     </style>
 </head>
 <body>
 
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Floating Audio Toggle Button -->
+    <button class="floating-audio-btn" id="audio-toggle-btn" type="button" aria-label="Nyalakan musik" title="Putar Musik">
+        🎵
+    </button>
+
+    <!-- Pattern Lock Screen -->
     <div class="pattern-lock" id="pattern-lock">
         <div class="pattern-card">
             <h1>Rahasia kecil 💌</h1>
-            <p class="pattern-instruction">Gambar pola untuk membuka</p>
+            <p class="pattern-instruction">Tarik pola untuk membuka layar</p>
+            
             <div class="pattern-grid" id="pattern-grid" role="group" aria-label="Pola kunci 3 kali 3">
                 <svg viewBox="0 0 280 280" aria-hidden="true">
                     <polyline class="pattern-line" id="pattern-line"></polyline>
@@ -673,7 +1155,18 @@
                 <button class="pattern-point" type="button" data-point="8" aria-label="Titik 8"></button>
                 <button class="pattern-point" type="button" data-point="9" aria-label="Titik 9"></button>
             </div>
+
             <p class="pattern-status" id="pattern-status" aria-live="polite">Geser untuk membentuk pola ✨</p>
+            
+            <div class="pattern-helper-actions">
+                <button type="button" class="pattern-action-btn" onclick="togglePatternHint()">💡 Petunjuk</button>
+                <button type="button" class="pattern-action-btn" onclick="unlockPatternDirectly()">Langsung Buka 💖</button>
+            </div>
+
+            <div class="pattern-hint-box" id="pattern-hint-box">
+                Petunjuk: Bentuk huruf inisial <b>"N"</b> (Nur Azizah) 💕<br>
+                <small>(Tarik dari kiri atas ke bawah, serong ke kanan atas, lalu tarik lurus ke bawah)</small>
+            </div>
         </div>
     </div>
 
@@ -690,6 +1183,7 @@
         <div class="splash-card">
             <span class="splash-heart" aria-hidden="true">💌</span>
             <p class="splash-title">Ada sesuatu buat kamu, Zizul</p>
+            <p class="splash-hint">Ketuk layar untuk langsung masuk ✨</p>
         </div>
     </div>
 
@@ -700,11 +1194,45 @@
             <div class="retro-window">
                 <div class="window-header">
                     <span>C:\Users\Zizul\Home.exe</span>
-                    <span>_ X</span>
+                    <span class="window-controls">_ ✕</span>
                 </div>
                 <div class="window-body">
-                    <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" style="width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; box-shadow: 2px 2px 8px rgba(0,0,0,0.1);" alt="Senyum Zizul">
+                    <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" 
+                         style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; box-shadow: 2px 2px 8px rgba(0,0,0,0.1); cursor: pointer;" 
+                         alt="Senyum Zizul" 
+                         onclick="openLightboxIndex(0)">
                     <div class="typewriter" id="typewriter-text"></div>
+                </div>
+            </div>
+
+            <!-- Pesan Manis Generator -->
+            <div class="interactive-quote-card">
+                <div class="quote-title">🌸 Pesan Manis Hari Ini</div>
+                <div class="quote-text" id="quote-display">"Bumi punya 8 miliar orang, tapi yang senyumnya paling bikin salting cuma Zizul 🙈"</div>
+                <button type="button" class="btn-sweet" onclick="generateNewQuote()">✨ Ganti Pesan</button>
+            </div>
+
+            <!-- Quick Shortcut Cards for Mobile -->
+            <div class="quick-nav-grid">
+                <div class="quick-card" onclick="goToTab('message')">
+                    <div class="quick-card-icon">💌</div>
+                    <div class="quick-card-title">Surat Rahasia</div>
+                    <div class="quick-card-desc">Buka pesan untukmu</div>
+                </div>
+                <div class="quick-card" onclick="goToTab('gallery')">
+                    <div class="quick-card-icon">📸</div>
+                    <div class="quick-card-title">Foto Momen</div>
+                    <div class="quick-card-desc">Lihat 13 foto cantik</div>
+                </div>
+                <div class="quick-card" onclick="goToTab('universe')">
+                    <div class="quick-card-icon">🪐</div>
+                    <div class="quick-card-title">Semesta 3D</div>
+                    <div class="quick-card-desc">Jelajahi galaksi foto</div>
+                </div>
+                <div class="quick-card" onclick="goToTab('playlist')">
+                    <div class="quick-card-icon">🎵</div>
+                    <div class="quick-card-title">Playlist Lagu</div>
+                    <div class="quick-card-desc">Lagu yang pas buatmu</div>
                 </div>
             </div>
         </section>
@@ -714,18 +1242,40 @@
             <div class="retro-window">
                 <div class="window-header">
                     <span>C:\Users\Zizul\Surat_Buat_Zizul.txt</span>
-                    <span>_ X</span>
+                    <span class="window-controls">_ ✕</span>
                 </div>
                 <div class="window-body">
-                    <div class="letter-paper">
-                        <h2 style="font-family: 'Quicksand', sans-serif; font-size: 1.3rem; border-bottom: 2px dashed #ccc; padding-bottom: 10px; margin-bottom: 15px;">Untuk: NUR AZIZAH (Zizul) 💌</h2>
+                    <div class="letter-toolbar">
+                        <button type="button" class="btn-font-toggle" id="btn-font-toggle" onclick="toggleLetterFont()">Aa Ubah Font</button>
+                    </div>
+                    <div class="letter-paper" id="letter-paper">
+                        <h2 style="font-family: 'Quicksand', sans-serif; font-size: 1.25rem; border-bottom: 2px dashed #ccc; padding-bottom: 8px; margin-bottom: 12px; color: #d96962;">Untuk: NUR AZIZAH (Zizul) 💌</h2>
                         Hai, Zizul!<br><br>
                         Jujur, aku seneng banget tiap kali bisa ngobrol sama kamu. Ada aja hal kecil dari kamu yang bikin hariku jadi lebih seru—dan entah kenapa, aku jadi sering kepikiran kamu juga 🙈<br><br>
                         Aku bikin ini khusus buat kamu. Anggap aja ini caraku bilang kalau aku pengin kenal kamu lebih dekat. Kalau kamu berkenan, kapan-kapan mau gak jalan bareng aku? Santai aja, gak perlu buru-buru jawab kok 😊<br><br>
                         Apa pun jawabannya, semoga hari-harimu selalu menyenangkan, ya. Tetap jadi Zizul yang bikin suasana jadi lebih cerah 💖<br><br>
-                        <span style="float:right;">Dari cowok yang lagi berusaha bikin kamu senyum 😉</span>
+                        <span style="float:right; font-size: 0.95em;">Dari cowok yang lagi berusaha bikin kamu senyum 😉</span>
                         <div style="clear:both;"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Interaksi Jawaban Zizul -->
+            <div class="proposal-card">
+                <div class="proposal-title">💌 Mau jalan bareng kapan-kapan? 👉👈</div>
+                <p class="proposal-desc">Pilih jawabanmu di bawah ini yaa:</p>
+                <div class="proposal-buttons">
+                    <button type="button" class="btn-proposal-yes" id="btn-proposal-yes" onclick="answerProposal(true)">Mau Banget! 🥰</button>
+                    <button type="button" class="btn-proposal-no" id="btn-proposal-no" onpointerdown="dodgeProposalBtn(event)">Nanti Dulu 😜</button>
+                </div>
+                <div class="proposal-result" id="proposal-result">
+                    <p>Aaa seneng banget dengernya! 🥰💖 Yuk kabarin aku langsung biar kita bisa atur harinya!</p>
+                    <a href="https://wa.me/?text=Hai!%20Aku%20udah%20baca%20suratnya,%20mau%20banget%20jalan%20bareng%20kamu%20%F0%9F%A5%B0%F0%9F%92%96" 
+                       target="_blank" 
+                       rel="noopener"
+                       class="btn-wa">
+                        💬 Balas ke WhatsApp
+                    </a>
                 </div>
             </div>
         </section>
@@ -735,109 +1285,30 @@
             <div class="retro-window">
                 <div class="window-header">
                     <span>C:\Users\Zizul\Memories.exe</span>
-                    <span>_ X</span>
+                    <span class="window-controls">_ ✕</span>
                 </div>
                 <div class="window-body">
-                    <h3 style="text-align: center; margin-bottom: 20px; font-family: 'VT323'; font-size: 1.5rem;">📸 Momen bareng Zizul</h3>
-                    <div class="gallery-grid">
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" alt="Zizul dengan filter hati" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Senyum manis kamu 💖</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42%20(1).jpeg" alt="Foto Zizul bergaya retro" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Vibes retro gemes 🤪</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42.jpeg" alt="Selfie Zizul berhijab hitam" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Cantik banget 🌸</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25%20(1).jpeg" alt="Zizul tersenyum" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Jadi kangen kamu 🙈</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25.jpeg" alt="Kolase foto Zizul berhijab putih" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Empat kali makin gemes 💌</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26%20(1).jpeg" alt="Kolase selfie Zizul" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Senyumnya bikin salting 😉</div>
-                        </div>
-                        <div class="polaroid">
-                            <div class="polaroid-img-wrapper">
-                                <div class="skeleton"></div>
-                                <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26.jpeg" alt="Selfie Zizul di luar ruangan" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                            </div>
-                            <div class="polaroid-caption">Cantik di mana aja ✨</div>
-                        </div>
+                    <h3 style="text-align: center; margin-bottom: 6px; font-family: 'VT323'; font-size: 1.5rem;">📸 Momen Manis Zizul</h3>
+                    <p style="text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 16px;">Ketuk foto untuk perbesar & geser ✨</p>
+                    <div class="gallery-grid" id="gallery-grid">
+                        <!-- Rendered by JS with all 13 photos -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- UNIVERSE SECTION -->
+        <!-- UNIVERSE SECTION (3D PHOTO GALAXY) -->
         <section id="universe" class="content">
             <div class="universe-scene" id="universe-scene">
+                <!-- Mobile Top Bar HUD -->
+                <div class="universe-hud">
+                    <span>🪐 Semesta Foto Zizul</span>
+                    <button type="button" class="universe-hud-btn" id="universe-toggle-btn" onclick="toggleUniverseAutoSpin()">⏸ Jeda</button>
+                </div>
+
                 <canvas class="galaxy-canvas rotating" id="galaxy-canvas" aria-hidden="true"></canvas>
                 <div class="planet-orbit" id="planet-orbit">
-                    <button class="universe-planet" type="button" aria-label="Buka foto 1">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.41.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 2">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 3">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2011.10.42.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 4">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 5">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.25.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 6">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 7">
-                        <img src="images/WhatsApp%20Image%202026-10-18%20at%2012.30.26.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 8">
-                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.03.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 9">
-                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04%20(1).jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 10">
-                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04%20(2).jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 11">
-                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.04.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 12">
-                        <img src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.05.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
-                    <button class="universe-planet" type="button" aria-label="Buka foto 13">
-                        <img class="rotated-photo" src="images/WhatsApp%20Image%202026-11-10%20at%2018.59.06.jpeg" alt="" onload="this.classList.add('loaded');">
-                    </button>
+                    <!-- Planets generated dynamically in JS for all 13 photos -->
                 </div>
             </div>
         </section>
@@ -847,79 +1318,256 @@
             <div class="retro-window">
                 <div class="window-header">
                     <span>C:\Users\Zizul\Playlist.mp3</span>
-                    <span>_ X</span>
+                    <span class="window-controls">_ ✕</span>
                 </div>
                 <div class="window-body">
-                    <h3 style="text-align: center; margin-bottom: 20px; font-family: 'VT323'; font-size: 1.5rem;">🎵 Lagu yang bikin inget kamu 🎵</h3>
-                    
-                    <div class="spotify-wrapper">
-                        <div class="skeleton"></div>
-                        <iframe src="https://open.spotify.com/embed/track/05GsNucq8Bngd9fnd4fRa0" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    <h3 style="text-align: center; margin-bottom: 6px; font-family: 'VT323'; font-size: 1.5rem;">🎵 Lagu yang Bikin Inget Kamu 🎵</h3>
+                    <p style="text-align: center; font-size: 0.82rem; color: #777; margin-bottom: 16px;">Pilihan lagu yang pas didengerin santai ✨</p>
+
+                    <div class="spotify-card">
+                        <div class="spotify-card-header">
+                            <span>Track #1: The Shade - Rex Orange County</span>
+                            <span>🎧</span>
+                        </div>
+                        <div class="spotify-wrapper">
+                            <div class="skeleton"></div>
+                            <iframe src="https://open.spotify.com/embed/track/05GsNucq8Bngd9fnd4fRa0" 
+                                    onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" 
+                                    allow="encrypted-media" 
+                                    loading="lazy"></iframe>
+                        </div>
+                        <a href="https://open.spotify.com/track/05GsNucq8Bngd9fnd4fRa0" target="_blank" rel="noopener" class="spotify-app-link">
+                            ▶ Buka di Aplikasi Spotify
+                        </a>
                     </div>
 
-                    <div class="spotify-wrapper">
-                        <div class="skeleton"></div>
-                        <iframe src="https://open.spotify.com/embed/track/1GP8VW5Wk2w2obkWjGCGXd" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    <div class="spotify-card">
+                        <div class="spotify-card-header">
+                            <span>Track #2: Oceans & Engines - NIKI</span>
+                            <span>🎧</span>
+                        </div>
+                        <div class="spotify-wrapper">
+                            <div class="skeleton"></div>
+                            <iframe src="https://open.spotify.com/embed/track/1GP8VW5Wk2w2obkWjGCGXd" 
+                                    onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" 
+                                    allow="encrypted-media" 
+                                    loading="lazy"></iframe>
+                        </div>
+                        <a href="https://open.spotify.com/track/1GP8VW5Wk2w2obkWjGCGXd" target="_blank" rel="noopener" class="spotify-app-link">
+                            ▶ Buka di Aplikasi Spotify
+                        </a>
                     </div>
 
-                    <div class="spotify-wrapper">
-                        <div class="skeleton"></div>
-                        <iframe src="https://open.spotify.com/embed/track/1BxfuPKGuaTgP7aM0Bbdwr" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" allowtransparency="true" allow="encrypted-media"></iframe>
+                    <div class="spotify-card">
+                        <div class="spotify-card-header">
+                            <span>Track #3: Cruel Summer - Taylor Swift</span>
+                            <span>🎧</span>
+                        </div>
+                        <div class="spotify-wrapper">
+                            <div class="skeleton"></div>
+                            <iframe src="https://open.spotify.com/embed/track/1BxfuPKGuaTgP7aM0Bbdwr" 
+                                    onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';" 
+                                    allow="encrypted-media" 
+                                    loading="lazy"></iframe>
+                        </div>
+                        <a href="https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr" target="_blank" rel="noopener" class="spotify-app-link">
+                            ▶ Buka di Aplikasi Spotify
+                        </a>
                     </div>
 
                 </div>
             </div>
         </section>
 
-        <!-- NAVIGATION -->
+        <!-- NAVIGATION (Mobile Tab Bar) -->
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="navigate('home', event)">Home</button>
-            <button class="nav-btn" onclick="navigate('message', event)">Surat</button>
-            <button class="nav-btn" onclick="navigate('gallery', event)">Foto</button>
-            <button class="nav-btn" onclick="navigate('universe', event)">Semesta</button>
-            <button class="nav-btn" onclick="navigate('playlist', event)">Lagu</button>
+            <button class="nav-btn active" onclick="navigate('home', event)">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('message', event)">
+                <span class="nav-icon">💌</span>
+                <span class="nav-label">Surat</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('gallery', event)">
+                <span class="nav-icon">📸</span>
+                <span class="nav-label">Foto</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('universe', event)">
+                <span class="nav-icon">🪐</span>
+                <span class="nav-label">Semesta</span>
+            </button>
+            <button class="nav-btn" onclick="navigate('playlist', event)">
+                <span class="nav-icon">🎵</span>
+                <span class="nav-label">Lagu</span>
+            </button>
         </nav>
 
     </div>
 
-    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Foto">
-        <button class="photo-lightbox-close" type="button" aria-label="Tutup foto">&times;</button>
-        <img id="lightbox-image" alt="">
+    <!-- Mobile-Optimized Photo Lightbox -->
+    <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="Lihat Foto">
+        <button class="photo-lightbox-close" type="button" aria-label="Tutup foto" onclick="closePhotoLightbox()">&times;</button>
+        
+        <button class="lightbox-nav-btn prev" type="button" aria-label="Foto Sebelumnya" onclick="navigateLightbox(-1)">&#10094;</button>
+        <button class="lightbox-nav-btn next" type="button" aria-label="Foto Selanjutnya" onclick="navigateLightbox(1)">&#10095;</button>
+
+        <div class="photo-lightbox-content">
+            <img id="lightbox-image" alt="Foto Zizul">
+            <div class="photo-lightbox-caption" id="lightbox-caption"></div>
+            <div class="photo-lightbox-counter" id="lightbox-counter"></div>
+        </div>
     </div>
 
     <script>
-        // Splash Screen Logic
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                splash.style.transform = 'rotateX(90deg) scale(0.5)';
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                }, 800);
-            }, 2500);
+        // Photo Data Catalog (All 13 images with sweet captions)
+        const photoData = [
+            { src: "images/WhatsApp Image 2026-10-18 at 11.10.41.jpeg", caption: "Senyum manis kamu 💖", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 11.10.42 (1).jpeg", caption: "Vibes retro gemes 🤪", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 11.10.42.jpeg", caption: "Cantik banget 🌸", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 12.30.25 (1).jpeg", caption: "Bikin kangen terus 🙈", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 12.30.25.jpeg", caption: "Empat kali makin gemes 💌", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 12.30.26 (1).jpeg", caption: "Senyumnya bikin salting 😉", rotated: false },
+            { src: "images/WhatsApp Image 2026-10-18 at 12.30.26.jpeg", caption: "Cantik di mana aja ✨", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.03.jpeg", caption: "Pose paling anggun 🌷", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.04 (1).jpeg", caption: "Tatapan yang bikin adem 💖", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.04 (2).jpeg", caption: "Selalu ceria & manis ☀️", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.04.jpeg", caption: "Lucu banget gayanya 🥰", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.05.jpeg", caption: "Bikin terpesona setiap saat 💫", rotated: false },
+            { src: "images/WhatsApp Image 2026-11-10 at 18.59.06.jpeg", caption: "Paling favorit! 💖", rotated: true }
+        ];
+
+        let currentLightboxIndex = 0;
+
+        // Render Gallery Grid items
+        const galleryGrid = document.getElementById('gallery-grid');
+        photoData.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'polaroid';
+            card.onclick = () => openLightboxIndex(index);
+            card.innerHTML = `
+                <div class="polaroid-img-wrapper">
+                    <div class="skeleton"></div>
+                    <img src="${encodeURI(item.src)}" 
+                         alt="${item.caption}" 
+                         class="${item.rotated ? 'rotated-photo' : ''}" 
+                         loading="lazy"
+                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                </div>
+                <div class="polaroid-caption">${item.caption}</div>
+            `;
+            galleryGrid.appendChild(card);
         });
 
-        // Pattern lock: the N path through a 3x3 grid.
+        // Render Universe Planets
+        const planetOrbit = document.getElementById('planet-orbit');
+        photoData.forEach((item, index) => {
+            const planet = document.createElement('button');
+            planet.className = 'universe-planet';
+            planet.type = 'button';
+            planet.setAttribute('aria-label', `Buka foto ${index + 1}`);
+            planet.innerHTML = `
+                <img src="${encodeURI(item.src)}" 
+                     alt="" 
+                     class="${item.rotated ? 'rotated-photo' : ''}" 
+                     loading="lazy"
+                     onload="this.classList.add('loaded');">
+            `;
+            planetOrbit.appendChild(planet);
+        });
+
+        // Haptic feedback helper for mobile touch
+        function triggerHaptic(duration = 15) {
+            if (navigator.vibrate) {
+                try { navigator.vibrate(duration); } catch(e) {}
+            }
+        }
+
+        // Tap heart / sparkle burst effect on mobile
+        window.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.pattern-point')) return;
+            createTapHeart(e.clientX, e.clientY);
+        }, { passive: true });
+
+        function createTapHeart(x, y) {
+            const heart = document.createElement('span');
+            heart.className = 'tap-heart';
+            const emojis = ['💖', '🌸', '✨', '💕', '🌷', '🥰'];
+            heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 40}px`);
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 750);
+        }
+
+        // Splash Screen Logic (Auto or Tap to skip)
+        const splash = document.getElementById('splash');
+        let splashDismissed = false;
+
+        function dismissSplash() {
+            if (splashDismissed) return;
+            splashDismissed = true;
+            triggerHaptic(25);
+            splash.style.transform = 'rotateX(90deg) scale(0.5)';
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 600);
+        }
+
+        splash.addEventListener('click', dismissSplash);
+        splash.addEventListener('touchstart', dismissSplash, { passive: true });
+        window.addEventListener('load', () => {
+            setTimeout(dismissSplash, 2400);
+        });
+
+        // Pattern Lock Logic
         const patternGrid = document.getElementById('pattern-grid');
         const patternStatus = document.getElementById('pattern-status');
         const patternLine = document.getElementById('pattern-line');
         const patternLock = document.getElementById('pattern-lock');
-        const targetPattern = ['1', '4', '7', '5', '3', '6', '9'];
+        const targetPattern = ['1', '4', '7', '5', '3', '6', '9']; // "N" pattern
         let currentPattern = [];
         let drawingPattern = false;
         let lastPointerPosition = null;
+
+        function togglePatternHint() {
+            triggerHaptic(15);
+            const box = document.getElementById('pattern-hint-box');
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function unlockPatternDirectly() {
+            triggerHaptic(30);
+            patternStatus.textContent = 'Berhasil! Ada sesuatu buat kamu 💖';
+            patternLock.classList.add('unlocked');
+            startTypewriter();
+        }
 
         function addPatternPoint(point) {
             if (!point || currentPattern.includes(point.dataset.point)) return;
             currentPattern.push(point.dataset.point);
             point.classList.add('selected');
+            triggerHaptic(12);
+            updatePatternLine();
+        }
+
+        function updatePatternLine(livePos = null) {
             const points = currentPattern.map((value) => {
                 const index = Number(value) - 1;
                 const x = (index % 3) * (280 / 3) + (280 / 6);
                 const y = Math.floor(index / 3) * (280 / 3) + (280 / 6);
                 return `${x},${y}`;
             });
+
+            if (livePos && drawingPattern && currentPattern.length > 0) {
+                const gridRect = patternGrid.getBoundingClientRect();
+                const liveX = Math.max(0, Math.min(280, ((livePos.x - gridRect.left) / gridRect.width) * 280));
+                const liveY = Math.max(0, Math.min(280, ((livePos.y - gridRect.top) / gridRect.height) * 280));
+                points.push(`${liveX},${liveY}`);
+            }
+
             patternLine.setAttribute('points', points.join(' '));
         }
 
@@ -944,7 +1592,7 @@
                     start.x + progress * dx - centerX,
                     start.y + progress * dy - centerY
                 );
-                return { point, progress, distance, radius: Math.min(bounds.width, bounds.height) * 0.3 };
+                return { point, progress, distance, radius: Math.min(bounds.width, bounds.height) * 0.35 };
             }).filter(({ point, distance, radius }) =>
                 !currentPattern.includes(point.dataset.point) && distance <= radius
             ).sort((a, b) => a.progress - b.progress);
@@ -956,6 +1604,7 @@
             const position = { x: event.clientX, y: event.clientY };
             if (lastPointerPosition) addPointsAlongPath(lastPointerPosition, position);
             lastPointerPosition = position;
+            updatePatternLine(position);
         }
 
         patternGrid.addEventListener('pointerdown', (event) => {
@@ -973,6 +1622,7 @@
 
         patternGrid.addEventListener('pointermove', (event) => {
             if (!drawingPattern) return;
+            event.preventDefault();
             trackPatternPointer(event);
         });
 
@@ -981,19 +1631,19 @@
             trackPatternPointer(event);
             drawingPattern = false;
             lastPointerPosition = null;
+
             const isCorrect = currentPattern.length === targetPattern.length &&
                 currentPattern.every((point, index) => point === targetPattern[index]);
 
             if (isCorrect) {
-                patternStatus.textContent = 'Berhasil! Ada sesuatu buat kamu 💖';
-                patternLock.classList.add('unlocked');
-                startTypewriter();
+                unlockPatternDirectly();
                 return;
             }
 
-            patternStatus.textContent = 'Belum pas, coba lagi ya 😉';
+            patternStatus.textContent = 'Belum pas, coba lagi ya 😉 (atau klik Petunjuk)';
             patternStatus.classList.add('error');
-            window.setTimeout(resetPattern, 600);
+            triggerHaptic([40, 40, 40]);
+            window.setTimeout(resetPattern, 650);
         });
 
         patternGrid.addEventListener('pointercancel', () => {
@@ -1002,16 +1652,160 @@
             resetPattern();
         });
 
-        // Draw a rotating particle galaxy and orbit the photos in 3D space.
+        // Typewriter Effect
+        const typewriterContent = "Hai Zizul! Aku bikin ini khusus buat kamu. Boleh gak aku kenal kamu lebih dekat? 🙈";
+        let typeIndex = 0;
+        let isTyping = false;
+        let typeTimeout;
+
+        function startTypewriter() {
+            if (isTyping) return;
+            isTyping = true;
+            clearTimeout(typeTimeout);
+            const container = document.getElementById('typewriter-text');
+            if (!container) return;
+            container.innerHTML = "";
+            typeIndex = 0;
+            
+            function type() {
+                if (typeIndex < typewriterContent.length) {
+                    container.innerHTML += typewriterContent.charAt(typeIndex);
+                    typeIndex++;
+                    typeTimeout = setTimeout(type, 45);
+                } else {
+                    isTyping = false;
+                }
+            }
+            type();
+        }
+
+        // Quotes Generator
+        const sweetQuotes = [
+            "\"Bumi punya 8 miliar orang, tapi yang senyumnya paling bikin salting cuma Zizul 🙈\"",
+            "\"Hari ini jangan lupa senyum ya, soalnya senyum kamu itu bikin hariku cerah 🌸\"",
+            "\"Kalo liat foto kamu, rasanya waktu berhenti sebentar biar aku bisa bersyukur ✨\"",
+            "\"Semoga segala hal baik selalu mengelilingi kamu hari ini ya, Zizul! 💖\"",
+            "\"Ada hal kecil yang selalu bikin gemes: cara kamu tersenyum di setiap foto 🥰\"",
+            "\"Apapun yang lagi kamu lakuin sekarang, semangat terus yaa! 🌷\""
+        ];
+        let quoteIndex = 0;
+
+        function generateNewQuote() {
+            triggerHaptic(20);
+            quoteIndex = (quoteIndex + 1) % sweetQuotes.length;
+            const quoteEl = document.getElementById('quote-display');
+            quoteEl.style.opacity = '0';
+            setTimeout(() => {
+                quoteEl.textContent = sweetQuotes[quoteIndex];
+                quoteEl.style.opacity = '1';
+            }, 150);
+        }
+
+        // Font Toggle for Letter
+        function toggleLetterFont() {
+            triggerHaptic(15);
+            const paper = document.getElementById('letter-paper');
+            const btn = document.getElementById('btn-font-toggle');
+            paper.classList.toggle('clean-font');
+            if (paper.classList.contains('clean-font')) {
+                btn.textContent = 'Aa Font Bersambung';
+            } else {
+                btn.textContent = 'Aa Font Rapi';
+            }
+        }
+
+        // Proposal Invitation Interactions
+        function answerProposal(accepted) {
+            triggerHaptic([40, 50, 40]);
+            const resultBox = document.getElementById('proposal-result');
+            resultBox.style.display = 'block';
+            fireConfetti();
+        }
+
+        function dodgeProposalBtn(e) {
+            e.preventDefault();
+            triggerHaptic(25);
+            const btn = document.getElementById('btn-proposal-no');
+            const randomX = (Math.random() - 0.5) * 120;
+            const randomY = (Math.random() - 0.5) * 50;
+            btn.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
+            const hints = ['Eits gak bisa 😝', 'Coba klik yang kiri! 💖', 'Yakin mau nolak? 🥺', 'Tombolnya kabur 🙈'];
+            btn.textContent = hints[Math.floor(Math.random() * hints.length)];
+            
+            // Make the yes button slightly bigger
+            const yesBtn = document.getElementById('btn-proposal-yes');
+            yesBtn.style.transform = 'scale(1.08)';
+        }
+
+        // Lightbox Functions
+        const photoLightbox = document.getElementById('photo-lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+
+        function openLightboxIndex(index) {
+            triggerHaptic(20);
+            pauseGalaxy();
+            currentLightboxIndex = (index + photoData.length) % photoData.length;
+            const item = photoData[currentLightboxIndex];
+            lightboxImage.src = encodeURI(item.src);
+            lightboxImage.classList.toggle('rotated-photo', !!item.rotated);
+            lightboxCaption.textContent = item.caption;
+            lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${photoData.length}`;
+            photoLightbox.classList.add('open');
+        }
+
+        function closePhotoLightbox() {
+            triggerHaptic(15);
+            photoLightbox.classList.remove('open');
+            if (document.getElementById('universe').classList.contains('active')) {
+                startGalaxy();
+            }
+        }
+
+        function navigateLightbox(step) {
+            openLightboxIndex(currentLightboxIndex + step);
+        }
+
+        // Lightbox swipe gesture for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        photoLightbox.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].clientX;
+            touchStartY = e.changedTouches[0].clientY;
+        }, { passive: true });
+
+        photoLightbox.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const dx = touchEndX - touchStartX;
+            const dy = touchEndY - touchStartY;
+            if (Math.abs(dx) > 45 && Math.abs(dy) < 55) {
+                if (dx > 0) navigateLightbox(-1); // swipe right -> prev
+                else navigateLightbox(1); // swipe left -> next
+            }
+        }, { passive: true });
+
+        photoLightbox.addEventListener('click', (event) => {
+            if (event.target === photoLightbox) {
+                closePhotoLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closePhotoLightbox();
+            if (event.key === 'ArrowRight') navigateLightbox(1);
+            if (event.key === 'ArrowLeft') navigateLightbox(-1);
+        });
+
+        // Universe Galaxy Simulation (Mobile Optimized)
         const universeScene = document.getElementById('universe-scene');
         const galaxyCanvas = document.getElementById('galaxy-canvas');
         const galaxyContext = galaxyCanvas.getContext('2d');
-        const planetOrbit = document.getElementById('planet-orbit');
         const universePlanets = [...planetOrbit.querySelectorAll('.universe-planet')];
-        const photoLightbox = document.getElementById('photo-lightbox');
-        const lightboxImage = document.getElementById('lightbox-image');
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         const galaxyPalette = ['#faffd1', '#fff1a8', '#b6ffbd', '#8cf7ff', '#ffc8eb', '#d4c2ff'];
+        
         let galaxyWidth = 0;
         let galaxyHeight = 0;
         let galaxyDpr = 1;
@@ -1031,6 +1825,15 @@
         let touchEnergy = 0;
         let targetTouchEnergy = 0;
         let touchRipple = 0;
+        let orbitOffsetAngle = 0;
+        let isGalaxyAutoSpin = true;
+
+        function toggleUniverseAutoSpin() {
+            triggerHaptic(20);
+            isGalaxyAutoSpin = !isGalaxyAutoSpin;
+            const btn = document.getElementById('universe-toggle-btn');
+            btn.textContent = isGalaxyAutoSpin ? '⏸ Jeda' : '▶ Putar';
+        }
 
         function resizeGalaxy() {
             const bounds = universeScene.getBoundingClientRect();
@@ -1043,20 +1846,22 @@
             galaxyCanvas.style.height = `${galaxyHeight}px`;
             galaxyContext.setTransform(galaxyDpr, 0, 0, galaxyDpr, 0, 0);
 
-            const particleCount = Math.min(2600, Math.round(galaxyWidth * galaxyHeight / 145));
+            // Responsive particle count for mobile vs desktop (preserves 60fps)
+            const isMobile = window.innerWidth <= 600;
+            const particleCount = isMobile ? Math.min(650, Math.round(galaxyWidth * galaxyHeight / 380)) : Math.min(1800, Math.round(galaxyWidth * galaxyHeight / 160));
             galaxyParticles = Array.from({ length: particleCount }, () => ({
                 arm: Math.floor(Math.random() * 3),
                 angle: (Math.random() - 0.5) * 1.35,
                 radius: Math.pow(Math.random(), 0.72),
-                size: Math.random() * 1.9 + 0.45,
+                size: Math.random() * 1.8 + 0.45,
                 speed: 0.045 + Math.random() * 0.14,
                 color: galaxyPalette[Math.floor(Math.random() * galaxyPalette.length)],
                 phase: Math.random() * Math.PI * 2
             }));
-            galaxyStars = Array.from({ length: 140 }, () => ({
+            galaxyStars = Array.from({ length: isMobile ? 55 : 120 }, () => ({
                 x: Math.random() * galaxyWidth,
                 y: Math.random() * galaxyHeight,
-                size: Math.random() * 1.25 + 0.2,
+                size: Math.random() * 1.2 + 0.2,
                 phase: Math.random() * Math.PI * 2
             }));
             drawGalaxy(0);
@@ -1067,16 +1872,18 @@
             if (!galaxyWidth || !galaxyHeight) return;
 
             const context = galaxyContext;
-            const centerX = galaxyWidth / 2 + pointerX * 13;
-            const centerY = galaxyHeight * 0.48 + pointerY * 10;
-            const radiusX = galaxyWidth * 0.52;
-            const radiusY = Math.min(galaxyHeight * 0.42, galaxyWidth * 0.58);
+            const centerX = galaxyWidth / 2 + pointerX * 10;
+            const centerY = galaxyHeight * 0.47 + pointerY * 8;
+            const radiusX = galaxyWidth * 0.5;
+            const radiusY = Math.min(galaxyHeight * 0.38, galaxyWidth * 0.55);
             const elapsed = time / 1000;
             const coreX = centerX + (touchX - centerX) * touchEnergy * 0.22;
             const coreY = centerY + (touchY - centerY) * touchEnergy * 0.22;
-            const pulse = 1 + Math.sin(elapsed * 2.1) * 0.12 + touchEnergy * 0.28;
+            const pulse = 1 + Math.sin(elapsed * 2.1) * 0.1 + touchEnergy * 0.25;
 
             context.clearRect(0, 0, galaxyWidth, galaxyHeight);
+
+            // Background Nebula
             const background = context.createRadialGradient(centerX, centerY, 2, centerX, centerY, radiusX);
             background.addColorStop(0, 'rgba(255, 206, 100, 0.22)');
             background.addColorStop(0.24, 'rgba(89, 49, 142, 0.18)');
@@ -1085,47 +1892,18 @@
             context.fillStyle = background;
             context.fillRect(0, 0, galaxyWidth, galaxyHeight);
 
+            // Auroras
             const aurora = context.createRadialGradient(
-                centerX + Math.sin(elapsed * 0.22) * radiusX * 0.08,
-                centerY - radiusY * 0.54, 0,
-                centerX, centerY - radiusY * 0.54, radiusX * 0.92
+                centerX, centerY - radiusY * 0.5, 0,
+                centerX, centerY - radiusY * 0.5, radiusX * 0.8
             );
-            aurora.addColorStop(0, `rgba(25, 255, 143, ${0.62 + Math.sin(elapsed * 1.25) * 0.08})`);
-            aurora.addColorStop(0.38, 'rgba(14, 177, 115, 0.31)');
+            aurora.addColorStop(0, `rgba(25, 255, 143, ${0.5 + Math.sin(elapsed * 1.2) * 0.08})`);
+            aurora.addColorStop(0.45, 'rgba(14, 177, 115, 0.25)');
             aurora.addColorStop(1, 'rgba(5, 28, 27, 0)');
             context.fillStyle = aurora;
             context.fillRect(0, 0, galaxyWidth, galaxyHeight);
 
-            const greenHaze = context.createRadialGradient(
-                centerX, centerY - radiusY * 0.52, 0,
-                centerX, centerY - radiusY * 0.52, radiusX * 0.54
-            );
-            greenHaze.addColorStop(0, 'rgba(63, 255, 163, 0.24)');
-            greenHaze.addColorStop(0.55, 'rgba(24, 176, 132, 0.11)');
-            greenHaze.addColorStop(1, 'rgba(12, 47, 68, 0)');
-            context.fillStyle = greenHaze;
-            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
-
-            const blueAurora = context.createRadialGradient(
-                centerX - radiusX * 0.34, centerY + radiusY * 0.42, 0,
-                centerX - radiusX * 0.34, centerY + radiusY * 0.42, radiusX * 0.72
-            );
-            blueAurora.addColorStop(0, 'rgba(25, 211, 255, 0.2)');
-            blueAurora.addColorStop(0.5, 'rgba(34, 111, 201, 0.1)');
-            blueAurora.addColorStop(1, 'rgba(5, 28, 27, 0)');
-            context.fillStyle = blueAurora;
-            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
-
-            const stardust = context.createRadialGradient(
-                coreX, coreY, 2, coreX, coreY, radiusX * 0.74
-            );
-            stardust.addColorStop(0, 'rgba(255, 236, 144, 0.5)');
-            stardust.addColorStop(0.22, 'rgba(255, 193, 91, 0.27)');
-            stardust.addColorStop(0.55, 'rgba(255, 128, 199, 0.14)');
-            stardust.addColorStop(1, 'rgba(255, 128, 199, 0)');
-            context.fillStyle = stardust;
-            context.fillRect(0, 0, galaxyWidth, galaxyHeight);
-
+            // Stars
             galaxyStars.forEach((star) => {
                 const opacity = 0.25 + (Math.sin(elapsed * 1.8 + star.phase) + 1) * 0.32;
                 context.globalAlpha = opacity;
@@ -1135,6 +1913,7 @@
                 context.fill();
             });
 
+            // Spiral Particles
             galaxyParticles.forEach((particle) => {
                 const armAngle = particle.arm * Math.PI * 2 / 3;
                 const radius = particle.radius;
@@ -1150,14 +1929,12 @@
                     const swirl = influence * (1 - radius * 0.4) * 0.75;
                     const cos = Math.cos(swirl);
                     const sin = Math.sin(swirl);
-                    const movedX = dx * cos - dy * sin;
-                    const movedY = dx * sin + dy * cos;
-                    x = touchX + movedX + (dx / distance) * influence * 24;
-                    y = touchY + movedY + (dy / distance) * influence * 24;
+                    x = touchX + (dx * cos - dy * sin) + (dx / distance) * influence * 20;
+                    y = touchY + (dx * sin + dy * cos) + (dy / distance) * influence * 20;
                 }
 
                 const twinkle = 0.43 + (Math.sin(elapsed * 2.4 + particle.phase) + 1) * 0.28;
-                const size = particle.size * (0.6 + (1 - radius) * 1.15);
+                const size = particle.size * (0.6 + (1 - radius) * 1.1);
                 context.globalAlpha = Math.min(1, twinkle * (1 - radius * 0.28));
                 context.fillStyle = particle.color;
                 context.beginPath();
@@ -1165,44 +1942,27 @@
                 context.fill();
             });
 
+            // Center Glowing Core
             context.globalAlpha = 1;
-            const glow = context.createRadialGradient(coreX, coreY, 1, coreX, coreY, 76 * pulse);
+            const glow = context.createRadialGradient(coreX, coreY, 1, coreX, coreY, 65 * pulse);
             glow.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
-            glow.addColorStop(0.09, 'rgba(255, 249, 218, 0.9)');
-            glow.addColorStop(0.2, 'rgba(255, 224, 143, 0.66)');
-            glow.addColorStop(0.48, 'rgba(255, 160, 224, 0.2)');
+            glow.addColorStop(0.12, 'rgba(255, 249, 218, 0.88)');
+            glow.addColorStop(0.25, 'rgba(255, 224, 143, 0.6)');
+            glow.addColorStop(0.5, 'rgba(255, 160, 224, 0.18)');
             glow.addColorStop(1, 'rgba(167, 107, 255, 0)');
             context.fillStyle = glow;
             context.beginPath();
-            context.arc(coreX, coreY, 76 * pulse, 0, Math.PI * 2);
+            context.arc(coreX, coreY, 65 * pulse, 0, Math.PI * 2);
             context.fill();
 
-            const sphereRadius = 8 + touchEnergy * 3;
-            const sphere = context.createRadialGradient(
-                coreX - sphereRadius * 0.3, coreY - sphereRadius * 0.38, 1,
-                coreX, coreY, sphereRadius * 1.4
-            );
-            sphere.addColorStop(0, '#ffffff');
-            sphere.addColorStop(0.32, '#fffce7');
-            sphere.addColorStop(0.72, '#ffe4a8');
-            sphere.addColorStop(1, 'rgba(255, 183, 226, 0.15)');
-            context.fillStyle = sphere;
-            context.beginPath();
-            context.arc(coreX, coreY, sphereRadius, 0, Math.PI * 2);
-            context.fill();
-
+            // Ripple
             if (touchRipple > 0) {
-                const rippleRadius = 12 + (1 - touchRipple) * Math.min(galaxyWidth, galaxyHeight) * 0.34;
-                context.globalAlpha = touchRipple * 0.62;
+                const rippleRadius = 12 + (1 - touchRipple) * Math.min(galaxyWidth, galaxyHeight) * 0.3;
+                context.globalAlpha = touchRipple * 0.6;
                 context.strokeStyle = '#c9ffe9';
                 context.lineWidth = 1.5 + touchRipple * 2;
                 context.beginPath();
                 context.arc(touchX, touchY, rippleRadius, 0, Math.PI * 2);
-                context.stroke();
-                context.globalAlpha = touchRipple * 0.32;
-                context.lineWidth = 1;
-                context.beginPath();
-                context.arc(touchX, touchY, rippleRadius * 0.68, 0, Math.PI * 2);
                 context.stroke();
             }
             context.globalAlpha = 1;
@@ -1211,22 +1971,27 @@
         function positionPlanets(time) {
             if (!galaxyWidth || !galaxyHeight) return;
 
-            const centerX = galaxyWidth / 2 + pointerX * 20;
-            const centerY = galaxyHeight * 0.47 + pointerY * 15;
+            const centerX = galaxyWidth / 2 + pointerX * 14;
+            const centerY = galaxyHeight * 0.47 + pointerY * 10;
             const elapsed = time / 1000;
+            const isMobile = window.innerWidth <= 600;
 
             universePlanets.forEach((planet, index) => {
                 const orbitSize = 0.94 + (index % 3) * 0.025;
                 const angle = (index / universePlanets.length) * Math.PI * 2 +
-                    elapsed * (0.105 + index * 0.0007);
+                    (isGalaxyAutoSpin ? elapsed * 0.095 : 0) + orbitOffsetAngle;
                 const depth = Math.sin(angle);
-                const radiusX = Math.min(galaxyWidth * 0.44 * orbitSize, galaxyWidth / 2 - 60);
-                const radiusY = Math.min(galaxyHeight * 0.38 * orbitSize, galaxyHeight / 2 - 110);
+                
+                // Mobile-tailored elliptical radii
+                const radiusX = Math.min(galaxyWidth * (isMobile ? 0.38 : 0.44) * orbitSize, (galaxyWidth / 2) - (isMobile ? 36 : 60));
+                const radiusY = Math.min(galaxyHeight * (isMobile ? 0.28 : 0.36) * orbitSize, (galaxyHeight / 2) - (isMobile ? 80 : 110));
+                
                 const x = centerX + Math.cos(angle) * radiusX;
                 const y = centerY + Math.sin(angle) * radiusY;
-                const scale = 0.42 + ((depth + 1) / 2) * 0.5;
+                const scale = (isMobile ? 0.5 : 0.42) + ((depth + 1) / 2) * (isMobile ? 0.45 : 0.5);
+                
                 planet.style.zIndex = String(Math.round((depth + 1) * 10));
-                planet.style.transform = `translate3d(${x}px, ${y}px, ${depth * 180}px) translate(-50%, -50%) scale(${scale}) rotateY(${pointerX * -16}deg) rotateX(${pointerY * 12}deg) rotateZ(${Math.cos(angle) * 5}deg)`;
+                planet.style.transform = `translate3d(${x}px, ${y}px, ${depth * (isMobile ? 110 : 180)}px) translate(-50%, -50%) scale(${scale}) rotateY(${pointerX * -14}deg) rotateX(${pointerY * 10}deg) rotateZ(${Math.cos(angle) * 4}deg)`;
             });
         }
 
@@ -1244,6 +2009,7 @@
             touchY += (targetTouchY - touchY) * 0.13;
             touchEnergy += (targetTouchEnergy - touchEnergy) * 0.1;
             touchRipple = Math.max(0, touchRipple - 0.012);
+            
             drawGalaxy(galaxyElapsed);
             positionPlanets(galaxyElapsed);
             galaxyFrame = window.requestAnimationFrame(animateGalaxy);
@@ -1265,6 +2031,20 @@
             galaxyLastFrame = 0;
         }
 
+        // Universe Touch & Gesture Controls (Allows dragging to spin orbit)
+        let dragStartX = 0;
+        let isDraggingOrbit = false;
+
+        universeScene.addEventListener('pointerdown', (event) => {
+            const bounds = universeScene.getBoundingClientRect();
+            targetTouchX = event.clientX - bounds.left;
+            targetTouchY = event.clientY - bounds.top;
+            targetTouchEnergy = 1;
+            touchRipple = 1;
+            dragStartX = event.clientX;
+            isDraggingOrbit = true;
+        });
+
         universeScene.addEventListener('pointermove', (event) => {
             const bounds = universeScene.getBoundingClientRect();
             targetPointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
@@ -1273,55 +2053,31 @@
                 targetTouchX = event.clientX - bounds.left;
                 targetTouchY = event.clientY - bounds.top;
                 targetTouchEnergy = 1;
+                if (isDraggingOrbit) {
+                    const dx = event.clientX - dragStartX;
+                    dragStartX = event.clientX;
+                    orbitOffsetAngle += dx * 0.007; // Drag to spin orbit
+                }
             }
-        });
-
-        universeScene.addEventListener('pointerdown', (event) => {
-            const bounds = universeScene.getBoundingClientRect();
-            targetTouchX = event.clientX - bounds.left;
-            targetTouchY = event.clientY - bounds.top;
-            targetTouchEnergy = 1;
-            touchRipple = 1;
         });
 
         universeScene.addEventListener('pointerup', () => {
             targetTouchEnergy = 0;
+            isDraggingOrbit = false;
         });
 
         universeScene.addEventListener('pointerleave', () => {
             targetPointerX = 0;
             targetPointerY = 0;
             targetTouchEnergy = 0;
+            isDraggingOrbit = false;
         });
 
-        universePlanets.forEach((planet) => {
-            planet.addEventListener('pointerenter', pauseGalaxy);
-            planet.addEventListener('pointerdown', pauseGalaxy);
-            planet.addEventListener('pointerleave', () => {
-                if (!photoLightbox.classList.contains('open')) startGalaxy();
+        universePlanets.forEach((planet, index) => {
+            planet.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openLightboxIndex(index);
             });
-            planet.addEventListener('click', () => {
-                pauseGalaxy();
-                const image = planet.querySelector('img');
-                lightboxImage.src = image.src;
-                lightboxImage.classList.toggle('rotated-photo', image.classList.contains('rotated-photo'));
-                photoLightbox.classList.add('open');
-            });
-        });
-
-        function closePhotoLightbox() {
-            photoLightbox.classList.remove('open');
-            if (document.getElementById('universe').classList.contains('active')) startGalaxy();
-        }
-
-        photoLightbox.addEventListener('click', (event) => {
-            if (event.target === photoLightbox || event.target.closest('.photo-lightbox-close')) {
-                closePhotoLightbox();
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closePhotoLightbox();
         });
 
         if ('ResizeObserver' in window) {
@@ -1331,27 +2087,22 @@
         }
         resizeGalaxy();
 
-        // Navigation Logic
+        // Navigation Controller
         function navigate(tabId, event) {
-            // Remove active classes
+            triggerHaptic(18);
+
             document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
             
-            // Add active class to clicked
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
-            // Trigger ripple effect manually (micro-interaction)
-            event.target.style.transform = 'scale(0.85)';
-            setTimeout(() => {
-                event.target.style.transform = 'scale(1)';
-            }, 150);
-
-            // Re-run typewriter if home is clicked
-            if(tabId === 'home') {
+            if (tabId === 'home') {
                 startTypewriter();
             }
-            if(tabId === 'universe') {
+            if (tabId === 'universe') {
                 document.body.classList.add('universe-open');
                 startGalaxy();
                 galaxyCanvas.classList.remove('rotating');
@@ -1363,30 +2114,124 @@
             }
         }
 
-        // Typewriter Effect
-        const text = "Hai Zizul! Aku bikin ini khusus buat kamu. Boleh gak aku kenal kamu lebih dekat? 🙈";
-        let index = 0;
-        let isTyping = false;
-        let typeTimeout;
+        function goToTab(tabId) {
+            const btn = document.querySelector(`.nav-btn[onclick*="${tabId}"]`);
+            if (btn) btn.click();
+        }
 
-        function startTypewriter() {
-            if(isTyping) return;
-            isTyping = true;
-            clearTimeout(typeTimeout);
-            const container = document.getElementById('typewriter-text');
-            container.innerHTML = "";
-            index = 0;
-            
-            function type() {
-                if (index < text.length) {
-                    container.innerHTML += text.charAt(index);
-                    index++;
-                    typeTimeout = setTimeout(type, 50);
+        // Web Audio Synthesizer (Ambient Lo-Fi Chime Melody for Mobile)
+        let audioContext = null;
+        let isAudioPlaying = false;
+        let audioTimer = null;
+        const audioBtn = document.getElementById('audio-toggle-btn');
+
+        const melodyNotes = [
+            261.63, 329.63, 392.00, 523.25, // C4, E4, G4, C5
+            220.00, 261.63, 329.63, 440.00, // A3, C4, E4, A4
+            174.61, 220.00, 261.63, 349.23, // F3, A3, C4, F4
+            196.00, 246.94, 293.66, 392.00  // G3, B3, D4, G4
+        ];
+        let noteStep = 0;
+
+        function playChimeNote(freq) {
+            if (!audioContext || audioContext.state === 'suspended') return;
+            try {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+                gain.gain.setValueAtTime(0, audioContext.currentTime);
+                gain.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.start();
+                osc.stop(audioContext.currentTime + 1.2);
+            } catch(e) {}
+        }
+
+        function stepMelody() {
+            if (!isAudioPlaying) return;
+            const note = melodyNotes[noteStep % melodyNotes.length];
+            playChimeNote(note);
+            noteStep++;
+            audioTimer = setTimeout(stepMelody, 420);
+        }
+
+        function toggleAudio() {
+            triggerHaptic(20);
+            if (!audioContext) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioCtx();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            isAudioPlaying = !isAudioPlaying;
+            if (isAudioPlaying) {
+                audioBtn.classList.add('playing');
+                audioBtn.textContent = '🎶';
+                stepMelody();
+            } else {
+                audioBtn.classList.remove('playing');
+                audioBtn.textContent = '🎵';
+                clearTimeout(audioTimer);
+            }
+        }
+
+        audioBtn.addEventListener('click', toggleAudio);
+
+        // Confetti Fireworks Effect
+        function fireConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const confettiCount = 120;
+            const pieces = Array.from({ length: confettiCount }, () => ({
+                x: window.innerWidth / 2,
+                y: window.innerHeight * 0.6,
+                vx: (Math.random() - 0.5) * 14,
+                vy: -Math.random() * 14 - 4,
+                size: Math.random() * 8 + 4,
+                color: ['#ffb7b2', '#ffd3b6', '#ffaaa5', '#a8e6cf', '#dcedc1', '#b5ead7'][Math.floor(Math.random() * 6)],
+                rotation: Math.random() * 360,
+                vRot: (Math.random() - 0.5) * 12,
+                opacity: 1
+            }));
+
+            let frame = 0;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.35; // gravity
+                    p.rotation += p.vRot;
+                    p.opacity -= 0.009;
+
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.opacity);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                if (frame < 120) {
+                    frame++;
+                    requestAnimationFrame(render);
                 } else {
-                    isTyping = false;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }
             }
-            type();
+            render();
         }
     </script>
 </body>
