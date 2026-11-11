@@ -7,6 +7,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script>
+        // Force refresh to bypass mobile browser cache
+        if (!window.location.search.includes('v=3')) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('v', '3');
+            window.location.replace(url.toString());
+        }
+    </script>
     <title>For Zizul 💖</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1034,11 +1045,11 @@
 
         /* Bottom Nav Bar (Mobile App Style) */
         .nav-bar {
-            position: absolute;
-            bottom: calc(10px + var(--safe-bottom));
+            position: fixed;
+            bottom: calc(14px + var(--safe-bottom));
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             padding: 6px;
@@ -1046,11 +1057,11 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            width: calc(100% - 20px);
+            width: calc(100% - 24px);
             max-width: 440px;
             border: 2px solid var(--text-dark);
-            box-shadow: 0 4px 14px rgba(92, 74, 74, 0.2);
-            z-index: 100;
+            box-shadow: 0 4px 16px rgba(92, 74, 74, 0.25);
+            z-index: 1000;
         }
 
         .nav-btn {
@@ -1097,10 +1108,10 @@
         .universe-open .nav-bar {
             position: fixed;
             z-index: 10000;
-            bottom: calc(10px + var(--safe-bottom));
-            width: calc(100% - 20px);
+            bottom: calc(14px + var(--safe-bottom));
+            width: calc(100% - 24px);
             max-width: 440px;
-            background: rgba(12, 14, 35, 0.85);
+            background: rgba(12, 14, 35, 0.88);
             border-color: rgba(224, 214, 255, 0.5);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(16px);
